@@ -1,0 +1,67 @@
+body {
+  background-color: #f4f4f4 !important;
+}
+#mainMap {
+  height: 80vh;
+  /* width: 40vh; */
+}
+
+:root {
+  --icon-sm: 0.5rem;
+  --icon-lg: 1rem;
+  --mg-sm: -0.2rem;
+  --mg-lg: -0.4rem;
+}
+.base-icon{
+  background-color: #2474f29e;
+  width: var(--icon-sm) !important;
+  height: var(--icon-sm) !important;
+  border-radius: 5rem;
+  border: 0.1rem solid #bbc0c7;
+  margin-left: var(--mg-sm) !important;
+  margin-top: var(--mg-sm) !important;
+}
+
+.hover-icon{
+  background-color: #2473f2c9;
+  width: var(--icon-lg) !important;
+  height: var(--icon-lg) !important;
+  border-radius: 5rem;
+  border: 0.1rem solid #bbc0c7;
+  margin-left: var(--mg-lg) !important;
+  margin-top: var(--mg-lg) !important;
+  z-index: 1000 !important;
+} 
+
+.select-icon{
+  background-color: #ff3501c4;
+  width: var(--icon-lg) !important;
+  height: var(--icon-lg) !important;
+  border-radius: 5rem;
+  border: 0.1rem solid #bbc0c7;
+  margin-left: var(--mg-lg) !important;
+  margin-top: var(--mg-lg) !important;
+  z-index: 1000 !important;
+}
+
+.info {
+  padding: 6px 8px;
+  font: 14px/16px Arial, Helvetica, sans-serif;
+  background: white;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  border-radius: 5px;
+}
+
+.info h5 {
+  margin: 0 0 3px;
+  color: #777;
+}
+
+.dd-select{
+  width: 100%;
+}
+
+.no-display{
+  display: none !important;
+}

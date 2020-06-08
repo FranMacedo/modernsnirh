@@ -1,0 +1,21 @@
+{% load static %}
+{% load compress %}
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+  </head>
+  <body>
+   
+    
+    <div class="container-fluid">
+     asdasdads
+    </div>
+
+  {% compress js %}
+    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+  {% endcompress %}
+  </body>
+</html>
