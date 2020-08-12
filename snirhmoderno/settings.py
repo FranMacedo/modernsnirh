@@ -9,16 +9,12 @@ https://docs.djangoproject.com/en/3.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
-from .local_settings import LOCAL_DATABASES, LOCAL_DEBUG
+from .local_settings import LOCAL_DATABASES, LOCAL_DEBUG, BASE_DIR
 # from environs import Env
 import os
 
 # env = Env()
 # env.read_env()
-
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
