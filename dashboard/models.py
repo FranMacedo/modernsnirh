@@ -56,3 +56,36 @@ class Parametro(models.Model):
 
     def __str__(self):
         return str(self.designacao)
+
+
+class SelectedEstacao(models.Model):
+    estacao = models.ForeignKey(Estacao, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.estacao.nome)
+
+
+class SelectedParametro(models.Model):
+    parametro = models.ForeignKey(Parametro, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.parametro.designacao)
+
+
+class SessionData(models.Model):
+    estacao = models.ForeignKey(Estacao, on_delete=models.CASCADE, blank=True, null=True)
+    parametro = models.ForeignKey(Parametro, on_delete=models.CASCADE, blank=True, null=True)
+    date = models.DateTimeField(blank=True, null=True)  # date of value
+    value = models.FloatField(max_length=100, blank=True, null=True)  # value of parameter
+
+    def __str__(self):
+        return str(self.estacao.nome) + '-' + str(self.parametro.designacao)
+
+
+class SessionDataUnits(models.Model):
+    estacao = models.ForeignKey(Estacao, on_delete=models.CASCADE, blank=True, null=True)
+    parametro = models.ForeignKey(Parametro, on_delete=models.CASCADE, blank=True, null=True)
+    un = models.CharField(max_length=10, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.estacao.nome) + '-' + str(self.parametro.designacao)

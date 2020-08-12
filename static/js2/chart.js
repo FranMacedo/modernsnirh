@@ -1,11 +1,12 @@
-function get_chart(chartID, chartName, seriesName, seriesID, un, data) {
+function get_chart(chartID, chartName, seriesName, seriesID, un, data, chartType = "line") {
   // var node = document.getElementById("myList2").lastChild;
   // document.getElementById("myList1").appendChild(node);
   $("#chartsContainer").append(`<div id=${chartID} ></div>`);
+  $("#chartsContainer").append("<hr>");
   chart = Highcharts.stockChart(chartID, {
     chart: {
       zoomType: "x",
-      //                backgroundColor: 'transparent'
+      backgroundColor: "transparent",
     },
 
     rangeSelector: {
@@ -62,7 +63,7 @@ function get_chart(chartID, chartName, seriesName, seriesID, un, data) {
       headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
       pointFormat:
         '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-        '<td style="padding:0"> <b> {point.y:.1f}  mm</b></td></tr>',
+        `<td style="padding:0"> <b> {point.y:.1f}  ${un}</b></td></tr>`,
       footerFormat: "</table>",
       xDateFormat: "%d %B %Y",
       shared: true,
@@ -79,32 +80,32 @@ function get_chart(chartID, chartName, seriesName, seriesID, un, data) {
     subtitle: {
       text: "Selecione o intervalo de tempo pretendido",
     },
-    plotOptions: {
-      area: {
-        fillColor: {
-          linearGradient: {
-            x1: 0,
-            y1: 0,
-            x2: 0,
-            y2: 1,
-          },
-          stops: [
-            [0, Highcharts.getOptions().colors[0]],
-            [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0.3).get("rgba")],
-          ],
-        },
-        marker: {
-          radius: 2,
-        },
-        lineWidth: 1,
-        states: {
-          hover: {
-            lineWidth: 1,
-          },
-        },
-        threshold: null,
-      },
-    },
+    // plotOptions: {
+    // area: {
+    //   fillColor: {
+    //     linearGradient: {
+    //       x1: 0,
+    //       y1: 0,
+    //       x2: 0,
+    //       y2: 1,
+    //     },
+    //     stops: [
+    //       [0, Highcharts.getOptions().colors[0]],
+    //       [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0.3).get("rgba")],
+    //     ],
+    //   },
+    //   marker: {
+    //     radius: 2,
+    //   },
+    //   lineWidth: 1,
+    //   states: {
+    //     hover: {
+    //       lineWidth: 1,
+    //     },
+    //   },
+    //   threshold: null,
+    // },
+    // },
     seriesOptions: {
       dataGrouping: {
         approximation: "sum",
@@ -115,7 +116,7 @@ function get_chart(chartID, chartName, seriesName, seriesID, un, data) {
         id: seriesID,
         name: seriesName,
         data: data,
-        type: "column",
+        type: chartType,
       },
     ],
   });

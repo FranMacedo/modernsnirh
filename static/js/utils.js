@@ -8,7 +8,7 @@ $(document).ready(function () {
     "state",
     JSON.stringify({
       selectedStations: {},
-      selectedParameters: [],
+      selectedParameters: {},
       stationChart: {},
     })
   );

@@ -1,6 +1,7 @@
 import pandas as pd
 import simplejson
 import numpy as np
+from dateutil.relativedelta import relativedelta
 
 
 def to_js_time(x):
@@ -14,16 +15,31 @@ def to_js_time(x):
 
 
 def clean_df(df, freq_int='MS'):
-    df = df.iloc[:, :2]
-    try:
-        un = df.columns[1].split(' ')[-1].strip('()')
-    except Exception as e:
-        print(f'something went wrong while gettin unidade: {e}')
-        un = ''
-    df.columns = ['date', 'value']
+    # df.to_csv('df.csv')
+
+    df = df[['date', 'value']]
+    # try:
+    #     un = df.columns[1].split(' ')[-1].strip('()')
+    # except Exception as e:
+    #     print(f'something went wrong while gettin unidade: {e}')
+    #     un = ''
+    # un = ''
+    # df.columns = ['date', 'value']
     df.index = pd.to_datetime(df.date)
-    df = df.reindex(pd.date_range(start=df.index[0], end=df.index[-1], freq=freq_int))
+    dr = pd.date_range(start=df.index[0], end=df.index[-1], freq=freq_int)
+    if freq_int == 'YS':
+        dr = [d + relativedelta(month=10, day=1) for d in dr]
+    df = df.reindex(dr)
     df.value = pd.to_numeric(df.value, errors='coerce')
+
+    if freq_int == 'YS':
+        chart_type = 'column'
+    else:
+        if df.value.isna().sum() > len(df)/2:
+            chart_type = 'column'
+        else:
+            chart_type = 'line'
+
     dates = list(map(to_js_time, df.index))
     data_js = [list(x) for x in zip(dates, df.value)]
-    return simplejson.dumps(data_js, ignore_nan=True), un
+    return simplejson.dumps(data_js, ignore_nan=True),  chart_type

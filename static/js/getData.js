@@ -2,6 +2,17 @@ const sleep = (milliseconds) => {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
 
+let flag = false;
+function showSelectAlert(msg) {
+  // append alert message to alertContainer
+  $("#alertContainer").empty();
+  $("#alertContainer").append(`<div class='alert alert-danger'>${msg}</div>`);
+
+  setTimeout(function () {
+    $("#alertContainer").children(`div[name=${msg}]`).remove();
+  }, 2000);
+}
+
 function updateCharts(data, station, parameter, prog, totalProg) {
   if (data["stat"] === "true") {
     let chartID = `chart_${parameter}`;
@@ -30,20 +41,49 @@ function updateCharts(data, station, parameter, prog, totalProg) {
   if (prog == totalProg) {
     sleep(1000).then(() => {
       $("#progressBarContainer").addClass("no-display");
+      $("#spinner").addClass("no-display");
     });
   }
-  $("#spinner").addClass("no-display");
 }
 
 async function handleFormSubmit() {
+  // get state
   let state = Object.assign(JSON.parse(sessionStorage.getItem("state")));
+
+  // check if empty selections and show alert
+  if (jQuery.isEmptyObject(state["selectedParameters"])) {
+    showSelectAlert("É necessário selecionar pelo menos um parâmetro!");
+    return;
+  } else {
+    $("#alertContainer").empty();
+  }
+  if (jQuery.isEmptyObject(state["selectedStations"])) {
+    showSelectAlert("É necessário selecionar pelo menos uma estação!");
+    return;
+  } else {
+    $("#alertContainer").empty();
+  }
+
+  //set progress
   let prog = 1;
   totalProg = Object.keys(state["selectedStations"]).length * Object.keys(state["selectedParameters"]).length;
   $("#progressBarContainer").removeClass("no-display");
-
-  $("#progressBar").css("width", `${5}%`);
+  $("#spinner").removeClass("no-display");
+  $("#progressBar").css("width", `${Math.min((1 / totalProg) * 100 * 0.8, 5)}%`);
+  if (flag) {
+    return;
+  }
   for (let station of Object.keys(state["selectedStations"])) {
+    //loop through selected stations
     for (let parameter of Object.keys(state["selectedParameters"])) {
+      //loop through selected parameters
+      console.log(flag);
+      if (flag) {
+        $("#progressBarContainer").addClass("no-display");
+        $("#spinner").addClass("no-display");
+        $("#cancelBarContainer").addClass("no-display");
+        return;
+      }
       if (!(state["stationChart"][station] && state["stationChart"][station].includes(`${parameter}`))) {
         console.log(`start of ${station} of ${parameter}`);
         $("#progressBarText").html(
@@ -72,19 +112,36 @@ async function handleFormSubmit() {
           });
 
           let chartsData = await response.json();
-          console.log(chartsData);
           updateCharts(chartsData, station, parameter, prog, totalProg);
         } catch (err) {
           console.log("An error occurred while fetching this story.");
         }
+        prog += 1;
+      } else {
+        console.log(`${station} of ${parameter} already exists... next!`);
+        console.log("prog", prog);
+        console.log("totalProg", totalProg);
+        prog += 1;
+        if (prog >= totalProg) {
+          console.log("yes sir!");
+          $("#progressBar").css("width", `100%`);
+          sleep(1000).then(() => {
+            $("#progressBarContainer").addClass("no-display");
+            $("#spinner").addClass("no-display");
+          });
+        }
       }
-      prog += 1;
     }
   }
 }
 
 $("#submitForm").click(function (e) {
   e.preventDefault();
-  $("#spinner").removeClass("no-display");
   handleFormSubmit();
+});
+
+$("#cancelBtn").click(() => {
+  $("#progressBarContainer").addClass("no-display");
+  $("#cancelBarContainer").removeClass("no-display");
+  flag = true;
 });

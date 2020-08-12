@@ -28,52 +28,70 @@ let prevLayersClicked = [];
 let prevLayerHovered = null;
 let featureLayer;
 
+function changeMapColors() {
+  const changeMapColorsPromise = new Promise((resolve, reject) => {
+    let selectedStations = $("#id_estacao").val();
+
+    prevLayersClicked = JSON.parse(sessionStorage.getItem("prevLayersClicked"));
+    if (prevLayersClicked != null) {
+      for (let stationID of prevLayersClicked) {
+        if (!selectedStations.includes(stationID)) {
+          let layerDeselect = getLayerFromId(stationID);
+          layerDeselect.setIcon(createIcon("base"));
+        }
+      }
+    }
+    for (let stationID of selectedStations) {
+      let layerSelect = getLayerFromId(stationID);
+      layerSelect.setIcon(createIcon("select"));
+    }
+
+    resolve(selectedStations);
+  }).then((selectedStations) => {
+    sessionStorage.setItem("prevLayersClicked", JSON.stringify(selectedStations));
+  });
+}
 $(document).ready(function () {
   //   Messenger.options = {
   //     extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
   //     theme: 'flat'
   // }
   //   Messenger().post("Your request has succeded!");
-
-  $("#id_estacao").select2({
-    placeholder: "Seleccione uma ou mais estações",
-    theme: "bootstrap",
-  });
-  $("#id_parametro").select2({
-    placeholder: "Seleccione um ou mais parametros",
-    theme: "bootstrap",
-  });
-
-  $("#id_estacao").on("change", function (e) {
-    $(".select2-selection__choice__remove").length && $(".select2-selection__choice__remove").changeElementType("span");
-    // selectedStations = $("#id_estacao").val();
-    updateStationState($("#id_estacao").select2("data"));
-    let state = JSON.parse(sessionStorage.getItem("state"));
-
-    for (let stationID of prevLayersClicked) {
-      if (!Object.keys(state["selectedStations"]).includes(stationID)) {
-        const layerDeselect = getLayerFromId(stationID);
-        layerDeselect.setIcon(createIcon("base"));
-      }
-    }
-
-    for (let stationID of Object.keys(state["selectedStations"])) {
-      if (prevLayersClicked.includes(stationID)) {
-        break;
-      }
-      featureLayer.eachLayer(function (layerCheck) {
-        if (layerCheck.feature.id == parseInt(stationID)) {
-          layerCheck.setIcon(createIcon("select"));
-          prevLayersClicked.push(layerCheck.feature.id);
-        }
-      });
-    }
-  });
-  $("#id_parametro").on("change", function (e) {
-    $(".select2-selection__choice__remove").length && $(".select2-selection__choice__remove").changeElementType("span");
-    // selectedParameters = $("#id_parametro").val();
-    updateParameterState($("#id_parametro").select2("data"));
-  });
+  // $("#id_estacao").select2({
+  //   placeholder: "Seleccione uma ou mais estações",
+  //   theme: "bootstrap",
+  // });
+  // $("#id_parametro").select2({
+  //   placeholder: "Seleccione um ou mais parametros",
+  //   theme: "bootstrap",
+  // });
+  // $("#id_estacao").on("change", function (e) {
+  //   $(".select2-selection__choice__remove").length && $(".select2-selection__choice__remove").changeElementType("span");
+  //   // selectedStations = $("#id_estacao").val();
+  //   let state = JSON.parse(sessionStorage.getItem("state"));
+  //   for (let stationID of prevLayersClicked) {
+  //     if (!Object.keys(state["selectedStations"]).includes(stationID)) {
+  //       const layerDeselect = getLayerFromId(stationID);
+  //       layerDeselect.setIcon(createIcon("base"));
+  //     }
+  //   }
+  //   for (let stationID of Object.keys(state["selectedStations"])) {
+  //     if (prevLayersClicked.includes(stationID)) {
+  //       break;
+  //     }
+  //     featureLayer.eachLayer(function (layerCheck) {
+  //       if (layerCheck.feature.id == parseInt(stationID)) {
+  //         layerCheck.setIcon(createIcon("select"));
+  //         prevLayersClicked.push(layerCheck.feature.id);
+  //       }
+  //     });
+  //   }
+  // });
+  // $("#id_parametro").on("change", function (e) {
+  //   $(".select2-selection__choice__remove").length && $(".select2-selection__choice__remove").changeElementType("span");
+  //   // selectedParameters = $("#id_parametro").val();
+  //   updateParameterState($("#id_parametro").select2("data"));
+  // });
 });
 
 function createIcon(type) {
@@ -178,6 +196,9 @@ const drawControl = new L.Control.Draw({
   },
   edit: false,
 });
+
+L.drawLocal.draw.toolbar.buttons.rectangle = "Selecionar várias estações";
+L.drawLocal.draw.handlers.rectangle.tooltip.start = "Clique e arraste para selecionar várias estações";
 
 mainMap.addControl(drawControl);
 // new L.Draw.Rectangle(mainMap, drawControl.options.rectangle).enable();
