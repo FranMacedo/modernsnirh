@@ -13,7 +13,6 @@ from django_pandas.io import read_frame
 def index(request):
     print('here!')
     if request.method == 'POST':
-
         response_body = json.loads(request.body)
         est_id = response_body.get('stat_id')
         param_id = response_body.get('param_id')
