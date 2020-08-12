@@ -9,11 +9,12 @@ https://docs.djangoproject.com/en/3.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
-from environs import Env
+from .local_settings import LOCAL_DATABASES, LOCAL_DEBUG
+# from environs import Env
 import os
 
-env = Env()
-env.read_env()
+# env = Env()
+# env.read_env()
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -27,7 +28,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '9dz8lc)9%3g3x=)e8xu(8gra0i@tb#z#krx)$rh&rwqn4o322u'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = LOCAL_DEBUG
 
 ALLOWED_HOSTS = []
 
@@ -86,17 +87,7 @@ WSGI_APPLICATION = 'snirhmoderno.wsgi.application'
 #     }
 # }
 
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": env('DB_NAME'),
-        "USER": env('DB_USER'),
-        "PASSWORD": env('DB_PASSWORD'),
-        "HOST": "localhost",
-        "PORT": "5432",
-    }
-}
+DATABASES = LOCAL_DATABASES
 
 
 # Password validation
