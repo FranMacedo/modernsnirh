@@ -4,6 +4,7 @@
 # Django #
 .env
 local_settings.py
+data.json
 env/
 !static/
 
