@@ -1,6 +1,24 @@
+function add_btns(containerId, classID) {
+  $(containerId).append(
+    `<a name="${classID}" class='downloadChart' id='excel' href="#" title='download em EXCEL (.xls)'><i class="fa fa-file-excel fa-lg"></i></a>`
+  );
+  $(containerId).append(
+    `<a name="${classID}" class='downloadChart' id='csv'  href="#" title='download em CSV (.csv)'><i class="fa fa-file-csv fa-lg"></i></a>`
+  );
+  $(containerId).append(
+    `<a name="${classID}" class='downloadChart' id='pdf'  href="#" title='download em PDF (.pdf)'><i class="fa fa-file-pdf fa-lg"></i></a>`
+  );
+  $(containerId).append(
+    `<a name="${classID}" class='downloadChart' id='png'  href="#" title='download de EXCEL (.xls)'><i class="fa fa-file-image fa-lg"></i></a>`
+  );
+  $(containerId).append("<span class='mr-1 align-text-bottom'><small>Download</small></span>");
+}
+
 function get_chart(chartID, chartName, seriesName, seriesID, un, data, chartType = "line") {
   // var node = document.getElementById("myList2").lastChild;
   // document.getElementById("myList1").appendChild(node);
+  $("#chartsContainer").append(`<div id="${chartID}Btns" class="mt-3 d-flex flex-row-reverse"></div>`);
+  add_btns(`#${chartID}Btns`, chartID);
   $("#chartsContainer").append(`<div id=${chartID} ></div>`);
   $("#chartsContainer").append("<hr>");
   chart = Highcharts.stockChart(chartID, {
@@ -77,35 +95,42 @@ function get_chart(chartID, chartName, seriesName, seriesID, un, data, chartType
       text: chartName,
     },
 
+    exporting: {
+      buttons: {
+        contextButton: {
+          enabled: false,
+        },
+      },
+
+      chartOptions: {
+        chart: {
+          backgroundColor: "#f4f4f4",
+        },
+        title: {
+          // text: sessionStorage.getItem("chartExportTitle") != undefined ? sessionStorage.getItem("chartExportTitle") : "",
+          style: {
+            fontSize: 10,
+          },
+        },
+        subtitle: {
+          style: {
+            fontSize: 8,
+          },
+        },
+        rangeSelector: {
+          enabled: false,
+          inputEnabled: true,
+        },
+        navigator: {
+          enabled: false,
+        },
+      },
+    },
+
     subtitle: {
       text: "Selecione o intervalo de tempo pretendido",
     },
-    // plotOptions: {
-    // area: {
-    //   fillColor: {
-    //     linearGradient: {
-    //       x1: 0,
-    //       y1: 0,
-    //       x2: 0,
-    //       y2: 1,
-    //     },
-    //     stops: [
-    //       [0, Highcharts.getOptions().colors[0]],
-    //       [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0.3).get("rgba")],
-    //     ],
-    //   },
-    //   marker: {
-    //     radius: 2,
-    //   },
-    //   lineWidth: 1,
-    //   states: {
-    //     hover: {
-    //       lineWidth: 1,
-    //     },
-    //   },
-    //   threshold: null,
-    // },
-    // },
+
     seriesOptions: {
       dataGrouping: {
         approximation: "sum",

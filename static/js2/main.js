@@ -16,6 +16,29 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function triggerDownload(chart, type) {
+  switch (type) {
+    case "excel":
+      chart.downloadXLS();
+      break;
+    case "csv":
+      chart.downloadCSV();
+      break;
+    case "pdf":
+      chart.exportChart({
+        type: "application/pdf",
+      });
+      break;
+    case "png":
+      chart.exportChart({
+        type: "image/png",
+      });
+      break;
+    default:
+      return;
+  }
+}
+
 $(document).ready(function () {
   $(".datepicker").datepicker({
     startDate: "-3d",
@@ -40,6 +63,7 @@ $(document).ready(function () {
 
   $("#submitForm").click(function (e) {
     e.preventDefault();
+    $("#initial-info").hide();
     handleFormSubmit();
   });
 
@@ -132,6 +156,14 @@ async function updateCharts(data, station, parameter, prog, totalProg) {
     );
     console.log("algum erroo");
   }
+  $(".downloadChart").click(function (e) {
+    console.log(e);
+    e.preventDefault();
+
+    let chart = $(`#${$(this).attr("name")}`).highcharts();
+    let type = $(this).attr("id");
+    triggerDownload(chart, type);
+  });
 
   $("#progressBar").css("width", `${(prog + 1 / totalProg) * 100}%`);
   // console.log("prog vai: ", prog);

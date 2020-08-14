@@ -122,9 +122,10 @@ def data_map(request):
 
 def testando(request):
     print('inicio!')
-    time.sleep(2)
-    print('fim')
-    return JsonResponse({'data': 'data'})
+    return render(request, 'index_2.html')
+    # time.sleep(2)
+    # print('fim')
+    # return JsonResponse({'data': 'data'})
 
     # def index(request):
     #     if request.method == 'POST':
