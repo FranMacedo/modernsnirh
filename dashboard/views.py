@@ -11,12 +11,12 @@ from django_pandas.io import read_frame
 
 
 def index(request):
-    print('here!')
+    # print('here!')
     if request.method == 'POST':
         response_body = json.loads(request.body)
         est_id = response_body.get('stat_id')
         param_id = response_body.get('param_id')
-        print(est_id, param_id)
+        # print(est_id, param_id)
         if not est_id or not param_id:
             return JsonResponse({'stat': 'false'})
 
@@ -28,9 +28,9 @@ def index(request):
         qs = SessionData.objects.filter(estacao=station, parametro=parameter)
 
         if not qs:
-            print('sem dados na session db')
+            # print('sem dados na session db')
             df, result = get_data(estacao=station.est_id, parametro=parameter.param_id)
-            print(df.head())
+            # print(df.head())
             try:
                 un = df.columns[1].split(' ')[-1].strip('()')
             except:
@@ -44,22 +44,24 @@ def index(request):
 
             df['estacao'] = station
             df['parametro'] = parameter
-
-            SessionData.objects.bulk_create(SessionData(**vals) for vals in df.to_dict('records'))
-            SessionDataUnits.objects.create(
-                estacao=station,
-                parametro=parameter,
-                un=un
-            ).save()
+            try:
+                SessionData.objects.bulk_create(SessionData(**vals) for vals in df.to_dict('records'))
+                SessionDataUnits.objects.create(
+                    estacao=station,
+                    parametro=parameter,
+                    un=un
+                ).save()
+            except:
+                pass
         else:
-            print('ja com dados na db!:')
+            # print('ja com dados na db!:')
             df = read_frame(qs)
             df = df[['date', 'value']]
             try:
                 un = SessionDataUnits.objects.get(estacao=station, parametro=parameter).un
             except:
                 un = ''
-        print(df.value)
+        # print(df.value)
         data, chart_type = clean_df(df, freq_int=parameter.freq)
 
         return JsonResponse({'stat': 'true',
@@ -103,6 +105,8 @@ def index(request):
         estacao_form = EstacaoForm()
         parametro_form = ParametroForm()
         SessionData.objects.all().delete()
+        SessionDataUnits.objects.all().delete()
+
     # print(Estacao.objects.all())
     return render(request, 'index.html', {'estacao_form': estacao_form, 'parametro_form': parametro_form})
 # Create your views here.
@@ -121,7 +125,7 @@ def data_map(request):
 
 
 def testando(request):
-    print('inicio!')
+    # print('inicio!')
     return render(request, 'index_2.html')
     # time.sleep(2)
     # print('fim')

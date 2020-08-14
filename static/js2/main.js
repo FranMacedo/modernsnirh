@@ -133,6 +133,14 @@ async function updateCharts(data, station, parameter, prog, totalProg) {
 
     if (!$(`#${chartID}`).highcharts()) {
       get_chart(chartID, chartName, seriesName, seriesID, data["un"], chartData, data["chartType"]);
+      $(".downloadChart").click(function (e) {
+        console.log(e);
+        e.preventDefault();
+
+        let chart = $(`#${$(this).attr("name")}`).highcharts();
+        let type = $(this).attr("id");
+        triggerDownload(chart, type);
+      });
     } else {
       // console.log("chart ja existe! adiciona series...");
       var chart = $(`#${chartID}`).highcharts();
@@ -156,14 +164,6 @@ async function updateCharts(data, station, parameter, prog, totalProg) {
     );
     console.log("algum erroo");
   }
-  $(".downloadChart").click(function (e) {
-    console.log(e);
-    e.preventDefault();
-
-    let chart = $(`#${$(this).attr("name")}`).highcharts();
-    let type = $(this).attr("id");
-    triggerDownload(chart, type);
-  });
 
   $("#progressBar").css("width", `${(prog + 1 / totalProg) * 100}%`);
   // console.log("prog vai: ", prog);
