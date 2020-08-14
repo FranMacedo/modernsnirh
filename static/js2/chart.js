@@ -9,7 +9,7 @@ function add_btns(containerId, classID) {
     `<a name="${classID}" class='downloadChart' id='pdf'  href="#" title='download em PDF (.pdf)'><i class="fa fa-file-pdf fa-lg"></i></a>`
   );
   $(containerId).append(
-    `<a name="${classID}" class='downloadChart' id='png'  href="#" title='download de EXCEL (.xls)'><i class="fa fa-file-image fa-lg"></i></a>`
+    `<a name="${classID}" class='downloadChart' id='png'  href="#" title='download de IMAGEM (.png)'><i class="fa fa-file-image fa-lg"></i></a>`
   );
   $(containerId).append("<span class='mr-1 align-text-bottom'><small>Download</small></span>");
 }
