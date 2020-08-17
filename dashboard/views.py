@@ -100,7 +100,10 @@ def index(request):
         parametro_form = ParametroForm()
         SessionData.objects.all().delete()
         SessionDataUnits.objects.all().delete()
-
+        from django.db import connection
+        cursor = connection.cursor()
+        cursor.execute("vacuum;")
+        # quit()
     # print(Estacao.objects.all())
     return render(request, 'index.html', {'estacao_form': estacao_form, 'parametro_form': parametro_form, 'gmaps_api_key': gmaps_api_key, 'mapbox_access_token': mapbox_access_token})
 # Create your views here.
