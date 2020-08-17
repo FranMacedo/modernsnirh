@@ -1,97 +1,41 @@
-# from django.test import TestCase, Client
-# from django.urls import reverse
-# from dashboard.models import Project, Category, Expense
-# import json
+from django.test import TestCase, Client
+from django.urls import reverse
+from dashboard.models import Estacao, Parametro, SessionData, SessionDataUnits
+import json
+import os
 
 
-# class TestViews(TestCase):
-#     def setUp(self):
-#         self.client = Client()
-#         self.list_url = reverse('list')
-#         self.detail_url = reverse('detail', args=['project1'])
-#         self.project1 = Project.objects.create(
-#             name='project1',
-#             budget=1000
-#         )
-#         self.category1 = Category.objects.create(
-#             project=self.project1,
-#             name='development'
-#         )
+class TestViews(TestCase):
+    fixtures = ["data.json"]
 
-#     def test_project_list_GET(self):
+    def setUp(self):
+        self.client = Client()
+        self.index_url = reverse('index')
+        self.map_url = reverse('mapData')
 
-#         response = self.client.get(self.list_url)
+    def test_map_GET(self):
 
-#         self.assertEquals(response.status_code, 200)
-#         self.assertTemplateUsed(response, 'budget/project-list.html')
+        response = self.client.get(self.map_url)
+        self.assertEquals(response.status_code, 200)
 
-#     def test_project_detail_GET(self):
+        result = json.loads(response.content)
+        self.assertEquals(result['features'][0]['properties']['codigo'], '02G/01U')
 
-#         response = self.client.get(self.detail_url)
+    def test_index_GET(self):
 
-#         self.assertEquals(response.status_code, 200)
-#         self.assertTemplateUsed(response, 'budget/project-detail.html')
+        response = self.client.get(self.index_url)
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'index.html')
 
-#     def test_project_detail_POST_add_new_expense(self):
+    def test_index_POST(self):
 
-#         response = self.client.post(self.detail_url, {
-#             'title': 'expense1',
-#             'amount': 1000,
-#             'category': 'development'
-#         })
+        response = self.client.post(self.index_url, {
+            'stat_id': 5526,
+            'param_id': 13,
+        })
+        self.assertEquals(response.status_code, 200)
 
-#         self.assertEquals(response.status_code, 302)
-#         self.assertEquals(self.project1.expenses.first().title, 'expense1')
+    def test_index_POST_nodata(self):
 
-#     def test_project_detail_POST_add_no_data(self):
-
-#         response = self.client.post(self.detail_url)
-
-#         self.assertEquals(response.status_code, 302)
-#         self.assertEquals(self.project1.expenses.count(), 0)
-
-#     def test_project_detail_DELETE_deletes_expense(self):
-#         Expense.objects.create(
-#             project=self.project1,
-#             title='expense1',
-#             amount=1000,
-#             category=self.category1
-#         )
-
-#         response = self.client.delete(self.detail_url, json.dumps({
-#             'id': 1
-#         }))
-#         self.assertEquals(response.status_code, 204)
-#         self.assertEquals(self.project1.expenses.count(), 0)
-
-#     def test_project_detail_DELETE_no_id(self):
-#         Expense.objects.create(
-#             project=self.project1,
-#             title='expense1',
-#             amount=1000,
-#             category=self.category1
-#         )
-
-#         response = self.client.delete(self.detail_url)
-#         self.assertEquals(response.status_code, 404)
-#         self.assertEquals(self.project1.expenses.count(), 1)
-
-#     def test_project_create_POST(self):
-#         url = reverse('add')
-#         response = self.client.post(url, {
-#             'name': 'project2',
-#             'budget': 20000,
-#             'categoriesString': 'design,development'
-#         })
-
-#         project2 = Project.objects.get(id=2)
-
-#         self.assertEquals(project2.name, 'project2')
-
-#         firstCategory = Category.objects.get(id=2)
-#         self.assertEquals(firstCategory.project, project2)
-#         self.assertEquals(firstCategory.name, 'design')
-
-#         secondCategory = Category.objects.get(id=3)
-#         self.assertEquals(secondCategory.project, project2)
-#         self.assertEquals(secondCategory.name, 'development')
+        response = self.client.post(self.index_url)
+        self.assertEquals(response.status_code, 200)

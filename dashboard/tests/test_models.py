@@ -1,5 +1,5 @@
 # from django.test import TestCase, Client
-# from budget.models import Project, Category, Expense
+# from dashboard.models import Project, Category, Expense
 
 
 # class TestModels(TestCase):
