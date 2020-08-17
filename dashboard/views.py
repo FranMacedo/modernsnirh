@@ -8,6 +8,7 @@ from .get_data import get_data
 from .data_proc import clean_df, get_model_from_parameter
 import time
 from django_pandas.io import read_frame
+from .secret_vars import gmaps_api_key, mapbox_access_token
 
 
 def index(request):
@@ -101,7 +102,7 @@ def index(request):
         SessionDataUnits.objects.all().delete()
 
     # print(Estacao.objects.all())
-    return render(request, 'index.html', {'estacao_form': estacao_form, 'parametro_form': parametro_form})
+    return render(request, 'index.html', {'estacao_form': estacao_form, 'parametro_form': parametro_form, 'gmaps_api_key': gmaps_api_key, 'mapbox_access_token': mapbox_access_token})
 # Create your views here.
 
 

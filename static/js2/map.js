@@ -64,18 +64,17 @@ L.tileLayer(
     maxZoom: 18,
     tileSize: 512,
     zoomOffset: -1,
-    accessToken: "pk.eyJ1IjoiZm1hY2VkbyIsImEiOiJjanp0a3FlZzEwNXdyM2hteDRmOTNsZDI3In0.UMzEBHFVDraOT5AkHcbe7A",
+    accessToken: mapboxAccessToken,
   }
 ).addTo(mainMap);
 
 /* Create searchcontrols */
-
 var GeoSearchControl = window.GeoSearch.GeoSearchControl;
 // var OpenStreetMapProvider = window.GeoSearch.OpenStreetMapProvider;
 // var provider = new OpenStreetMapProvider({ params: { countrycodes: "PT" } });
 var GoogleProvider = window.GeoSearch.GoogleProvider;
 var provider = new GoogleProvider({
-  params: { key: "AIzaSyC6RDNLfkAC0OnQqPRjPA1LI8PQrmcSRmk", language: "pt", region: "pt" },
+  params: { key: GmapsApiKey, language: "pt", region: "pt" },
 });
 //  Define search controls
 var searchControl = new GeoSearchControl({
