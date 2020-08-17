@@ -168,3 +168,12 @@ async function updateCharts(data, station, parameter, prog, totalProg) {
     hidelLoaders("slow");
   }
 }
+
+function setSelectionStyle() {
+  if ($(".select2-selection__choice__remove").length) {
+    $(".select2-selection__choice__remove").changeElementType("span");
+    $(".dd-arrow").addClass("no-display");
+  } else {
+    $(".dd-arrow").removeClass("no-display");
+  }
+}

@@ -6,6 +6,7 @@ html {
   /* font-family: "Montserrat" !important; */
   
     background-color: #f4f4f4 !important;
+
 }
 
 body {
@@ -134,7 +135,7 @@ input[type="search"] {
 
 .select2-selection--multiple{
   max-height: 100px !important;
-  overflow-y: auto !important;
+  /* overflow-y: auto !important; */
   overflow-x: hidden !important;
 
 }
@@ -194,7 +195,7 @@ input[type="search"] {
 	background-color: #eee;
 	
 	position: fixed;
-	z-index: 1000;
+	z-index: 2000;
 	top: 0;
 	left: 0;
 	right: 0;

@@ -21,18 +21,20 @@ $(document).ready(function () {
     placeholder: "Seleccione uma ou mais estações",
     theme: "material",
   });
+  // .on("select2:open", function () {
+  //   $(".select2-results__options").niceScroll();
+  // });
 
   $("#id_parametro").select2({
     placeholder: "Seleccione um ou mais parametros",
     theme: "material",
   });
+  // .on("select2:open", function () {
+  //   $(".select2-results__options").niceScroll();
+  // });
 
   $(".select2-search--inline").append('<span class="material-icons dd-arrow">arrow_drop_down</span>');
-  $("select")
-    .select2()
-    .on("select2:open", function () {
-      $(".select2-results__options").niceScroll();
-    });
+
   // $("#id_parametro").select2({
   //   placeholder: "Seleccione um ou mais parametros",
   //   theme: "bootstrap",
@@ -40,12 +42,13 @@ $(document).ready(function () {
   // });
 
   $("#id_estacao").on("change", function (e) {
-    $(".select2-selection__choice__remove").length && $(".select2-selection__choice__remove").changeElementType("span");
+    setSelectionStyle();
+
     changeMapColors();
   });
 
   $("#id_parametro").on("change", function (e) {
-    $(".select2-selection__choice__remove").length && $(".select2-selection__choice__remove").changeElementType("span");
+    setSelectionStyle();
   });
 
   $("#submitForm").click(function (e) {

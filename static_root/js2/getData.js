@@ -49,7 +49,9 @@ async function handleFormSubmit() {
       $("#progressBar").css("width", `${Math.max((prog / totalProg) * 100, 5)}%`);
       let statName = stations.filter((s) => s.id == statID)[0].text;
       let paramName = parameters.filter((p) => p.id == paramID)[0].text;
-      $("#progressBarText").html(`<h5>A angariar dados de <b>${paramName}</b> para <b>${statName}</b></h5>`);
+      $("#progressBarText").html(
+        `<h5 class="center-align">A angariar dados de <b>${paramName}</b> para <b>${statName}</b></h5>`
+      );
 
       // data to pass to the backend
       data = {
