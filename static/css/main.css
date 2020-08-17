@@ -1,17 +1,76 @@
-body {
-  background-color: #f4f4f4 !important;
-}
-#mainMap {
-  height: 80vh;
-  /* width: 40vh; */
+/* @import url("https://fonts.googleapis.com/css2?family=Montserrat"); */
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap');
+/*    GENERAL     */
+
+html {
+  /* font-family: "Montserrat" !important; */
+  
+    background-color: #f4f4f4 !important;
+
 }
 
+body {
+  overflow-x: hidden;
+  /* overflow-y: scroll; */
+  margin: 2rem auto;
+  font-size: var(--s-font-size);
+  line-height: 1.4;
+  /* overflow-x: hidden; */
+    /* overflow-y: scroll; */
+    
+    /* max-width: 600px; */
+    /* margin: 2rem auto; */
+}
+
+
 :root {
+  --s-font-size: 15px;
+
   --icon-sm: 0.5rem;
   --icon-lg: 1rem;
   --mg-sm: -0.2rem;
   --mg-lg: -0.4rem;
+  /* --chart-height: 400px; */
+
 }
+
+.mr-1{
+  margin-right: 0.1rem;
+}
+
+.mr-2{
+  margin-right: 0.3rem;
+}
+
+
+.mt-3{
+  margin-top: 0.5rem;
+}
+
+
+.no-display{
+  display: none !important;
+}
+
+
+/* NAV */
+
+nav .custom-brand-logo {
+  position: absolute;
+  color: #fff;
+  display: inline-block;
+  font-size: 2.1rem;
+  padding: 0;
+}
+
+/*    MAP     */
+
+#mainMap {
+  height: 75vh;
+  /* width: 40vh; */
+}
+
+
 .base-icon{
   background-color: #2474f29e;
   width: var(--icon-sm) !important;
@@ -53,25 +112,108 @@ body {
   border-radius: 5px;
 }
 
-.info h5 {
+.info p {
   margin: 0 0 3px;
   color: #777;
 }
 
-.dd-select{
-  width: 100%;
+/*     SELECTION    */
+
+input[type="search"] {
+  border-bottom: none !important;
+  outline: none !important;
+  box-shadow: none!important;
+
 }
 
-.no-display{
-  display: none !important;
+
+
+.select2-container {
+  width: 100% !important;
 }
-/* .download-chart-container{
+
+
+.select2-selection--multiple{
+  max-height: 100px !important;
+  /* overflow-y: auto !important; */
+  overflow-x: hidden !important;
+
+}
+
+.dd-arrow {
   position: absolute;
-  right: 5px; 
-} */
+  /* border: 2px solid red; */
+  right: 0 !important;
+  top: 0.8rem !important;
+  /* top: -2px; */
+}
 
+#submitForm{
+  padding-right: 10rem;
+  padding-left: 10rem;
+
+}
+/* CHARTS */
 .fa{
   color:  rgb(16 15 15 / 45%);
   padding-right: 0.2rem;
   height: 80%;
 }
+
+
+/* ALERTS */ 
+.info-card{
+  background-color: #bcd2f5c9;
+  padding: 20px;
+  border-radius: 10px;
+
+}
+
+.danger-toast{
+  background-color: rgb(240, 166, 166) !important;
+}
+
+.warning-toast{
+  background-color: rgb(201, 148, 36) !important;
+}
+
+#toast-container {
+  top: auto !important;
+  right: auto !important;
+  bottom: 10%;
+  right:3% !important;
+}
+
+
+/* LOADERS */
+
+.preloader-background {
+	display: flex;
+	align-items: center;
+  justify-content: center;
+  flex-direction: column;
+	background-color: #eee;
+	
+	position: fixed;
+	z-index: 2000;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;	
+}
+
+
+.pre-load{
+	background-color: #eee;
+}
+
+.mid-load{
+  background-color: rgba(87, 87, 87, 0.8); /* Black background with opacity */
+
+}
+
+#progressBarContainer{
+  color: #f4f4f4;
+  margin-top: 10px;
+}
+

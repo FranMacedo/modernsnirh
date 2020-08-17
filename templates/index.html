@@ -14,6 +14,10 @@
   <link  href=" https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.css"  rel="stylesheet"   type="text/css"/>
 
   <link  href="{% static 'leaflet-draw/dist/leaflet.draw.css' %}"  rel="stylesheet"   type="text/css"/>
+
+  <link href="https://unpkg.com/leaflet-geosearch@latest/assets/css/leaflet.css" rel="stylesheet" />
+
+
   <!-- <link  href="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.5.0/css/messenger-theme-future.css"  rel="stylesheet" /> -->
 
 <!--   
@@ -27,61 +31,108 @@
 {% endblock stylesheets %}
 
 {% block content %}
-  <div class="row">
-    <div class="col-md-4">
-      <h1>Estações Meteorológicas</h1>
+<div class="preloader-background pre-load">
+    
+  <div class="preloader-wrapper big active">
+    <div class="spinner-layer spinner-blue">
+      <div class="circle-clipper left">
+        <div class="circle"></div>
+      </div><div class="gap-patch">
+        <div class="circle"></div>
+      </div><div class="circle-clipper right">
+        <div class="circle"></div>
+      </div>
+    </div>
+
+    <div class="spinner-layer spinner-red">
+      <div class="circle-clipper left">
+        <div class="circle"></div>
+      </div><div class="gap-patch">
+        <div class="circle"></div>
+      </div><div class="circle-clipper right">
+        <div class="circle"></div>
+      </div>
+    </div>
+
+    <div class="spinner-layer spinner-yellow">
+      <div class="circle-clipper left">
+        <div class="circle"></div>
+      </div><div class="gap-patch">
+        <div class="circle"></div>
+      </div><div class="circle-clipper right">
+        <div class="circle"></div>
+      </div>
+    </div>
+
+    <div class="spinner-layer spinner-green">
+      <div class="circle-clipper left">
+        <div class="circle"></div>
+      </div><div class="gap-patch">
+        <div class="circle"></div>
+      </div><div class="circle-clipper right">
+        <div class="circle"></div>
+      </div>
+    </div>
+  </div>
+
+    
+    <div  id = "progressBarContainer" class="no-display center-align" style="width: 1000px;">
+      <div id = "progressBarText" class="d-inline center-align"></div>
+      <!-- <button id="cancelBtn" class="btn btn-danger d-inline">Cancelar</button> -->
+      <div class="progress">
+        <div id = "progressBar" class="determinate" style="width: 70%"></div>
+      </div>
+    </div>
+</div>
+
+  <div class="row section">
+    <div class="col s12 m4">
+      <h5>Estações Meteorológicas</h5>
       <div id="mainMap"></div> 
     </div>
-    <div class="col-md-8">
+    <!-- <span class="material-icons right">arrow_drop_down</span> -->
+    <div class="col s12 m8">
       <form method="post" id='station-parameter-form'>
         {% csrf_token %}
         <div class="row">
-          <div class="col-sm-6">
-            Estações:
+          <div class="col s12 m6">
             {{ estacao_form }}
           </div>
-          <div class="col-sm-6">
-            Parametros:
+          <div class="col s12 m6">
             {{ parametro_form }}
           </div>
-        </div>
         <!-- <input class="datepicker" data-date-format="mm/dd/yyyy"> -->
-
-        <button id="submitForm" class="btn btn-primary">Procurar</button>
+        </div>
+        <div class="row center">
+          <button id="submitForm" class="btn waves-effect waves-light ">Procurar</button>
+        </div>
+      
       </form>
 
-      <div class="spinner-grow text-info no-display" id='spinner' role="status">
+      <!-- <div class="spinner-grow text-info no-display" id='spinner' role="status">
         <span class="sr-only">Loading...</span>
-      </div>
+      </div> -->
 
-      <div  id = "progressBarContainer" class="no-display">
-      
 
-        <div id = "progressBarText" class="d-inline"></div>
-        <!-- <button id="cancelBtn" class="btn btn-danger d-inline">Cancelar</button> -->
-
-        <div class="progress">
-          <div id = "progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 25%"></div>
-        </div>
-      </div>
       <div  id = "cancelBarContainer" class="no-display">
         <div id = "cancelBarText">A cancelar...</div>
         <div class="progress">
           <div id = "cancelBar" class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 25%"></div>
         </div>
       </div>
-      <hr>
+      <div class="divider"></div>
 
       <div id='alertContainer'></div>
-      <div id="initial-info" class='alert alert-info alert-dismissible fade show text center'>Seleccione pelo menos uma estação e um parametro
 
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
+      <div id="initial-info" class='info-card center'>Seleccione pelo menos uma estação e um parametro</div>
+
+
+        <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span> -->
+        <!-- </button> -->
       <div id='chartsContainer'></div>
 
-      <div id='alertMissContainer'></div>
+      <!-- <div id='alertMissContainer'></div>  -->
 
     </div>
   </div>
@@ -94,10 +145,9 @@ var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
 </script>
 
 <script  src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.js"  type="text/javascript"></script>
-
-
-
 <script  src="{% static 'leaflet-draw/dist/leaflet.draw.js' %}"  type="text/javascript"></script>
+<script src="https://unpkg.com/leaflet-geosearch@latest/dist/bundle.min.js"></script>
+
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.5.0/js/messenger.min.js"></script> -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
@@ -111,6 +161,9 @@ var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
 <script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
 <script src="https://code.highcharts.com/modules/broken-axis.js"></script>
 
+
+<script type="text/javascript" src="{% static 'js2/func.js' %}"></script>
+<script type="text/javascript" src="{% static 'js2/getData.js' %}"></script>
 
 <script type="text/javascript" src="{% static 'js2/main.js' %}"></script>
 <script type="text/javascript" src="{% static 'js2/chart.js' %}"></script>

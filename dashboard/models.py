@@ -10,8 +10,14 @@ Copyright (c) 2019 - present AppSeed.us
 from django.db import models
 from django.contrib.auth.models import User
 from djgeojson.fields import PointField
+from django.utils.text import slugify
 
 # Create your models here.
+
+
+# class EstacaoLower(models.Manager):
+#     def get_queryset(self):
+#         return super().get_queryset().filter(author='Roald Dahl')
 
 
 class Estacao(models.Model):
@@ -46,30 +52,21 @@ class Estacao(models.Model):
         return f'<div><div>{self.nome}</div><div>{self.codigo}</div></div>'
 
     def __str__(self):
-        return str(self.codigo) + " - " + str(self.nome)
+        return str(self.codigo) + " - " + str(self.nome).title()
 
 
 class Parametro(models.Model):
     param_id = models.BigIntegerField(verbose_name="Parametro ID", default=0)
     designacao = models.CharField(max_length=100, blank=True, null=True, verbose_name="Designacao")
     freq = models.CharField(max_length=10, blank=True, null=True, verbose_name="Frequencia")
+    slug = models.SlugField(max_length=100, unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.designacao)
+        super(Parametro, self).save(*args, **kwargs)
 
     def __str__(self):
         return str(self.designacao)
-
-
-class SelectedEstacao(models.Model):
-    estacao = models.ForeignKey(Estacao, on_delete=models.CASCADE, blank=True, null=True)
-
-    def __str__(self):
-        return str(self.estacao.nome)
-
-
-class SelectedParametro(models.Model):
-    parametro = models.ForeignKey(Parametro, on_delete=models.CASCADE, blank=True, null=True)
-
-    def __str__(self):
-        return str(self.parametro.designacao)
 
 
 class SessionData(models.Model):
@@ -83,6 +80,33 @@ class SessionData(models.Model):
 
 
 class SessionDataUnits(models.Model):
+    estacao = models.ForeignKey(Estacao, on_delete=models.CASCADE, blank=True, null=True)
+    parametro = models.ForeignKey(Parametro, on_delete=models.CASCADE, blank=True, null=True)
+    un = models.CharField(max_length=10, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.estacao.nome) + '-' + str(self.parametro.designacao)
+
+
+class PrecipitacaoMensal(models.Model):
+    estacao = models.ForeignKey(Estacao, on_delete=models.CASCADE, blank=True, null=True)
+    date = models.DateTimeField(blank=True, null=True)  # date of value
+    value = models.FloatField(max_length=100, blank=True, null=True)  # value of parameter
+
+    def __str__(self):
+        return str(self.estacao.nome)
+
+
+class PrecipitacaoDiaria(models.Model):
+    estacao = models.ForeignKey(Estacao, on_delete=models.CASCADE, blank=True, null=True)
+    date = models.DateTimeField(blank=True, null=True)  # date of value
+    value = models.FloatField(max_length=100, blank=True, null=True)  # value of parameter
+
+    def __str__(self):
+        return str(self.estacao.nome)
+
+
+class EstacaoParamUnits(models.Model):
     estacao = models.ForeignKey(Estacao, on_delete=models.CASCADE, blank=True, null=True)
     parametro = models.ForeignKey(Parametro, on_delete=models.CASCADE, blank=True, null=True)
     un = models.CharField(max_length=10, blank=True, null=True)

@@ -5,7 +5,7 @@ from djgeojson.serializers import Serializer as GeoJSONSerializer
 from .forms import EstacaoForm, ParametroForm
 import json
 from .get_data import get_data
-from .data_proc import clean_df
+from .data_proc import clean_df, get_model_from_parameter
 import time
 from django_pandas.io import read_frame
 
@@ -13,93 +13,86 @@ from django_pandas.io import read_frame
 def index(request):
     # print('here!')
     if request.method == 'POST':
-        response_body = json.loads(request.body)
-        est_id = response_body.get('stat_id')
-        param_id = response_body.get('param_id')
-        # print(est_id, param_id)
-        if not est_id or not param_id:
-            return JsonResponse({'stat': 'false'})
+        try:
+            response_body = json.loads(request.body)
+            est_id_local = response_body.get('stat_id')
+            param_id_local = response_body.get('param_id')
+            print(est_id_local, param_id_local)
+            if not est_id_local or not param_id_local:
+                return JsonResponse({'stat': 'false'})
 
-        # SelectedEstacao.objects.all().delete()
-
-        station = get_object_or_404(Estacao, id=int(est_id))
-        parameter = get_object_or_404(Parametro, id=int(param_id))
-
-        qs = SessionData.objects.filter(estacao=station, parametro=parameter)
-
-        if not qs:
-            # print('sem dados na session db')
-            df, result = get_data(estacao=station.est_id, parametro=parameter.param_id)
-            # print(df.head())
+            station = get_object_or_404(Estacao, id=int(est_id_local))
+            parameter = get_object_or_404(Parametro, id=int(param_id_local))
+            has_model = False
+            has_qs = False
             try:
-                un = df.columns[1].split(' ')[-1].strip('()')
-            except:
-                un = ''
-            if not result:
-                return JsonResponse({'stat': 'false', 'station_name': station.nome, 'parameter_name': parameter.designacao})
-            df.columns = ['date', 'value']
+                # check if model exists
+                selected_model = get_model_from_parameter(parameter.param_id)
+                selected_model_un = EstacaoParamUnits
+                has_model = True
+            except ValueError:
+                # if not, check/save in session data
+                selected_model_un = SessionDataUnits
 
-            if df.value.isna().sum() == len(df):
-                return JsonResponse({'stat': 'false', 'station_name': station.nome, 'parameter_name': parameter.designacao})
+            if has_model:
+                # even if it has a model, it can has no data
+                qs = selected_model.objects.filter(estacao=station)
+                has_qs = True
+                if not qs:
+                    has_qs = False
+                    has_model = False
+                    selected_model_un = SessionDataUnits
 
-            df['estacao'] = station
-            df['parametro'] = parameter
-            try:
-                SessionData.objects.bulk_create(SessionData(**vals) for vals in df.to_dict('records'))
-                SessionDataUnits.objects.create(
-                    estacao=station,
-                    parametro=parameter,
-                    un=un
-                ).save()
-            except:
-                pass
-        else:
-            # print('ja com dados na db!:')
-            df = read_frame(qs)
-            df = df[['date', 'value']]
-            try:
-                un = SessionDataUnits.objects.get(estacao=station, parametro=parameter).un
-            except:
-                un = ''
-        # print(df.value)
-        data, chart_type = clean_df(df, freq_int=parameter.freq)
+            if not has_qs:
+                qs = SessionData.objects.filter(estacao=station, parametro=parameter)
 
-        return JsonResponse({'stat': 'true',
-                             'data': data,
-                             'station_name': station.nome,
-                             'parameter_name': parameter.designacao,
-                             'un': un,
-                             'chartType': chart_type
-                             })
-        # try:
-        #     station = Estacao.objects.get(id=est_id)
-        # except Exception as e:
-        #     print(f'fake station: {e}')
+            if not qs:
+                # print('sem dados na session db')
+                df, result = get_data(estacao=station.est_id, parametro=parameter.param_id)
+                # print(df.head())
+                try:
+                    un = df.columns[1].split(' ')[-1].strip('()')
+                except:
+                    un = ''
+                if not result:
+                    return JsonResponse({'stat': 'false', 'station_name': station.nome, 'parameter_name': parameter.designacao})
+                df.columns = ['date', 'value']
 
-        # try:
-        #     parameter = Parametro.objects.get(id=param_id)
-        # except Exception as e:
-        #     print(f'fake parameter: {e}')
+                if df.value.isna().sum() == len(df):
+                    return JsonResponse({'stat': 'false', 'station_name': station.nome, 'parameter_name': parameter.designacao})
 
-        # if station and parameter:
-        #     df, result = get_data(estacao=station.est_id, parametro=parameter.param_id)
+                df['estacao'] = station
+                df['parametro'] = parameter
+                try:
+                    SessionData.objects.bulk_create(SessionData(**vals) for vals in df.to_dict('records'))
+                    SessionDataUnits.objects.create(
+                        estacao=station,
+                        parametro=parameter,
+                        un=un
+                    ).save()
+                except:
+                    pass
 
-        #     if not result:
-        #         return JsonResponse({'stat': 'false'})
+            else:
+                # print('ja com dados na db!:')
+                df = read_frame(qs)
+                df = df[['date', 'value']]
+                try:
+                    un = selected_model_un.objects.get(estacao=station, parametro=parameter).un
+                except:
+                    un = ''
+            # print(df.value)
+            data, chart_type = clean_df(df, freq_int=parameter.freq)
 
-        #     data, un = clean_df(df, freq_int=parameter.freq)
-        #     station_name = station.nome
-        #     parameter_name = parameter.designacao
-
-        #     return JsonResponse({'stat': 'true',
-        #                          'data': data,
-        #                          'station_name': station_name,
-        #                          'parameter_name': parameter_name,
-        #                          'un': un
-        #                          })
-        # else:
-        #     return JsonResponse({'stat': 'false'})
-
+            return JsonResponse({'stat': 'true',
+                                 'data': data,
+                                 'station_name': station.nome,
+                                 'parameter_name': parameter.designacao,
+                                 'un': un,
+                                 'chartType': chart_type
+                                 })
+        except Exception as e:
+            return JsonResponse({'stat': 'error', 'msg': str(e)})
     # if a GET (or any other method) we'll create a blank form
     else:
         estacao_form = EstacaoForm()
@@ -116,8 +109,7 @@ def data_map(request):
     context = Estacao.objects.exclude(latitude__isnull=True).exclude(longitude__isnull=True)
     # context = Estacao.objects.first()
 
-    # We also want to show data for instalacoes that have no coordinates, even if they are not represented in the map
-    # context = Instalacao.user_allowed(request.user).select_related('gestao')
+    # We also SHOULD want to show data for instalacoes that have no coordinates, even if they are not represented in the map
 
     data = GeoJSONSerializer().serialize(context, use_natural_keys=True, with_modelname=False, properties=(
         "codigo", "nome", "id", "altitude", "latitude", "longitude", 'popupContent'))
@@ -127,43 +119,3 @@ def data_map(request):
 def testando(request):
     # print('inicio!')
     return render(request, 'index_2.html')
-    # time.sleep(2)
-    # print('fim')
-    # return JsonResponse({'data': 'data'})
-
-    # def index(request):
-    #     if request.method == 'POST':
-    #         # create a form instance and populate it with data from the request:
-    #         estacao_form = EstacaoForm(request.POST)
-    #         parametro_form = ParametroForm(request.POST)
-
-    #         estacao_valid = estacao_form.is_valid()
-    #         parametro_valid = parametro_form.is_valid()
-    #         print('\n\nISVALID :', parametro_valid, '\n\n')
-    #         # check whether it's valid:
-    #         if estacao_valid and parametro_valid:
-    #             data = {}
-    #             for e in estacao_form.cleaned_data['estacao']:
-    #                 print(e.id)
-    #                 data[e.id] = {}
-    #                 for p in parametro_form.cleaned_data['parametro']:
-    #                     print(p.freq)
-    #                     df, result = get_data(estacao=e.est_id, parametro=p.param_id)
-    #                     data[e.id][p.id] = clean_df(df, freq_int=p.freq)
-
-    #             print(data)
-    #             if not result:
-    #                 return JsonResponse({'stat': 'false'})
-
-    #             # process the data in form.cleaned_data as required
-    #             # ...
-    #             # redirect to a new URL:
-    #             return JsonResponse({'stat': 'true', 'data': data})
-
-    #     # if a GET (or any other method) we'll create a blank form
-    #     else:
-    #         estacao_form = EstacaoForm()
-    #         parametro_form = ParametroForm()
-    #     # print(Estacao.objects.all())
-    #     return render(request, 'index.html', {'estacao_form': estacao_form, 'parametro_form': parametro_form})
-    # # Create your views here.

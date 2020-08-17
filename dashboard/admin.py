@@ -4,5 +4,6 @@ from leaflet.admin import LeafletGeoAdmin
 
 # Register your models here.
 admin.site.register(Estacao, LeafletGeoAdmin)
+admin.site.register(Parametro)
 admin.site.register(SessionData)
 admin.site.register(SessionDataUnits)

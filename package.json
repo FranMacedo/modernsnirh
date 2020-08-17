@@ -1,0 +1,24 @@
+{
+  "name": "snirhmoderno",
+  "version": "1.0.0",
+  "description": "Modern Version of https://snirh.apambiente.pt/",
+  "main": "index.js",
+  "dependencies": {
+    "jquery.nicescroll": "^3.7.6",
+    "leaflet-draw": "^1.0.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FranMacedo/modernsnirh.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FranMacedo/modernsnirh/issues"
+  },
+  "homepage": "https://github.com/FranMacedo/modernsnirh#readme"
+}

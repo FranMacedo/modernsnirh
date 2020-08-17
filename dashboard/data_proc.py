@@ -43,3 +43,27 @@ def clean_df(df, freq_int='MS'):
     dates = list(map(to_js_time, df.index))
     data_js = [list(x) for x in zip(dates, df.value)]
     return simplejson.dumps(data_js, ignore_nan=True),  chart_type
+
+
+def get_model_from_parameter(param_id):
+    """model 'manager'. get's a specific parameter model from SNIRH id (NOT local id) form model "Parametro".
+       There might be a way of doing this better, but idk.
+
+
+    Args:
+        param_id (int):number identifying the param_id from snirh ids, NOT local 'Parametro' model id.
+
+    Raises:
+        ValueError: error
+
+    Returns:
+        django model: selected model
+    """
+    if param_id == 1436794570:
+        from .models import PrecipitacaoMensal
+        return PrecipitacaoMensal
+    elif param_id == 413026594:
+        from .models import PrecipitacaoDiaria
+        return PrecipitacaoDiaria
+    else:
+        raise ValueError
