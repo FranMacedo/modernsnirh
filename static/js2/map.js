@@ -11,7 +11,6 @@ const getLayerFromId = (id) => {
   return layer;
 };
 
-// const mapboxAccessToken = "pk.eyJ1IjoiZm1hY2VkbyIsImEiOiJjanp0a3FlZzEwNXdyM2hteDRmOTNsZDI3In0.UMzEBHFVDraOT5AkHcbe7A";
 const dataurl = "mapData";
 let prevLayersClicked = [];
 let prevLayerHovered = null;
@@ -59,7 +58,7 @@ var mainMap = L.map("mainMap", {
 }).setView([39.6, -7.8536599], zoom);
 
 L.tileLayer(
-  "https://api.mapbox.com/styles/v1/fmacedo/ckav8wl1b49vp1insfxcaywrn/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZm1hY2VkbyIsImEiOiJjanp0a3FlZzEwNXdyM2hteDRmOTNsZDI3In0.UMzEBHFVDraOT5AkHcbe7A",
+  `https://api.mapbox.com/styles/v1/fmacedo/ckav8wl1b49vp1insfxcaywrn/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxAccessToken}`,
   {
     maxZoom: 18,
     tileSize: 512,
