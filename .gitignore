@@ -8,7 +8,7 @@ data.json
 env/
 !static/
 
-node_modules
+node_modules/
 
 *.log
 *.pot
