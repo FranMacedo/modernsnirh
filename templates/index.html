@@ -17,16 +17,9 @@
 
   <link href="https://unpkg.com/leaflet-geosearch@latest/assets/css/leaflet.css" rel="stylesheet" />
 
+  
 
   <!-- <link  href="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.5.0/css/messenger-theme-future.css"  rel="stylesheet" /> -->
-
-<!--   
-  <link
-  rel="stylesheet"
-  type="text/css"
-  href="{% static 'css/datepicker.css' %}"
-/> -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.css"  type="text/css">
 
 {% endblock stylesheets %}
 
@@ -82,11 +75,16 @@
       <div class="progress">
         <div id = "progressBar" class="determinate" style="width: 70%"></div>
       </div>
+    <button id="cancel" class="btn-flat waves-effect waves-red cancel-btn-container"><span class="material-icons red-text text-lighten-2 cancel-btn">clear</span></button>
+
     </div>
+
 </div>
 
   <div class="row section">
     <div class="col s12 m4">
+      <!-- <button id="cancel2" class="btn-flat waves-effect waves-red cancel-btn-container"><span class="material-icons red-text text-darken-1 cancel-btn">clear</span></button> -->
+
       <h5>Estações Meteorológicas</h5>
       <div id="mainMap"></div> 
     </div>
@@ -101,9 +99,32 @@
           <div class="col s12 m6">
             {{ parametro_form }}
           </div>
-        <!-- <input class="datepicker" data-date-format="mm/dd/yyyy"> -->
+        </div>
+        <div class="row">
+          <div class="col m2 center-align" >
+              <p>De</p>
+          </div>
+          <div class="col m3 s12 center-align" class="datepicker-container">
+            <!-- <label for="startDatepicker" class="active">Entre</label> -->
+            <!-- <span class="material-icons">clear</span> -->
+            <i id="startDatepicker-icon"class="material-icons datepicker-icon">event</i>
+            <input id="startDatepicker" type="text" class="datepicker" placeholder="data de inicio">
+          </div>
+          <div class="col m2 center-align">
+            <p>Até</p>
+
+        </div>
+          <div class="col  m3 s12 center-align">
+            
+            <!-- <label for="endDatepicker" class="active">e</label> -->
+            <i id="endDatepicker-icon"class="material-icons datepicker-icon">event</i>
+            <input id="endDatepicker" type="text" class="datepicker" placeholder="data de fim">
+          </div>
+
         </div>
         <div class="row center">
+          
+
           <button id="submitForm" class="btn waves-effect waves-light ">Procurar</button>
         </div>
       
@@ -114,12 +135,12 @@
       </div> -->
 
 
-      <div  id = "cancelBarContainer" class="no-display">
+      <!-- <div  id = "cancelBarContainer" class="no-display">
         <div id = "cancelBarText">A cancelar...</div>
         <div class="progress">
           <div id = "cancelBar" class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 25%"></div>
         </div>
-      </div>
+      </div> -->
       <div class="divider"></div>
 
       <div id='alertContainer'></div>
@@ -136,6 +157,18 @@
 
     </div>
   </div>
+
+  <div id="modal1" class="modal">
+    <div class="modal-content">
+      <h4 class="red-text text-lighten-2">Demasiado dados</h4>
+      <p>A quantidade de dados que pretende recolher pode demorar algum tempo...Selecione um intervalo de datas menor.</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#" id="cancel-fecth" class="modal-close waves-effect waves-green green-text text-lighten-2 btn-flat">Voltar atrás</a>
+  
+      <a href="#" id="continue-fecth" class="modal-close waves-effect waves-red red-text text-lighten-2 btn-flat">Continuar mesmo assim</a>
+    </div>
+  </div>
 {% endblock content %}
 {% block javascripts %}
 
@@ -144,7 +177,7 @@
 var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
 let GmapsApiKey = "{{ gmaps_api_key }}";
 let mapboxAccessToken = "{{ mapbox_access_token }}";
-
+let largeParams = "{{large_params}}"
 </script>
 
 <script  src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.js"  type="text/javascript"></script>
@@ -155,8 +188,6 @@ let mapboxAccessToken = "{{ mapbox_access_token }}";
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pt.min.js"></script>
 
 <script src="https://code.highcharts.com/stock/highstock.js"></script>
 <script src="https://code.highcharts.com/stock/modules/data.js"></script>
@@ -164,6 +195,7 @@ let mapboxAccessToken = "{{ mapbox_access_token }}";
 <script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
 <script src="https://code.highcharts.com/modules/broken-axis.js"></script>
 
+<script type="text/javascript" src="{% static 'js2/config.js' %}"></script>
 
 <script type="text/javascript" src="{% static 'js2/func.js' %}"></script>
 <script type="text/javascript" src="{% static 'js2/getData.js' %}"></script>

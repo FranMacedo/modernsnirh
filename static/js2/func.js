@@ -114,7 +114,9 @@ const setDownloadTrigger = (chartID) => {
 
 async function updateCharts(data, station, parameter, prog, totalProg) {
   // function that creates or updates charts, depending if they exist already, or just shows alerts, if something goes wrong.
-
+  if (flag) {
+    return;
+  }
   if (data["stat"] === "true") {
     // if we have data, go for it
     let chartID = `chart_${parameter}`;
@@ -176,4 +178,38 @@ function setSelectionStyle() {
   } else {
     $(".dd-arrow").removeClass("no-display");
   }
+}
+
+function highlight(id, t = 3000) {
+  $(`#${id}`).addClass("highlight");
+  setTimeout(function () {
+    $(`#${id}`).removeClass("highlight");
+  }, t);
+}
+
+function highlightDatePickers() {
+  highlight("startDatepicker");
+  highlight("endDatepicker");
+}
+
+function checkToMuchData() {
+  let parameters = $("#id_parametro").select2("data");
+  parameters_ids = parameters.map((p) => p.id);
+  // get selected stations and parameters ids
+  let stations = $("#id_estacao").select2("data");
+  stations_ids = stations.map((s) => s.id);
+
+  // check if any of the forms are empty and if so do not proceed
+  if (!checkIfEmpty(stations_ids, parameters_ids)) return false;
+
+  const found = parameters_ids.some((r) => largeParams.includes(parseInt(r)));
+  console.log(largeParams);
+  console.log(parameters_ids);
+
+  // if both data inputs are empty and one of the selected params is large data (hoourly or daily), show modal
+  if ($("#startDatepicker").val() == "" && $("#endDatepicker").val() == "" && found) {
+    $("#modal1").modal("open");
+    return false;
+  }
+  return true;
 }

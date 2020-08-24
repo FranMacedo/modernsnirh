@@ -52,6 +52,16 @@ body {
   display: none !important;
 }
 
+.cancel-btn-container{
+  display: flex !important;
+  align-items: center !important;
+  position: absolute !important;
+  top: 20px;
+  right: 20px;
+}
+.cancel-btn{
+font-size: 40px !important;
+}
 
 /* NAV */
 
@@ -217,3 +227,37 @@ input[type="search"] {
   margin-top: 10px;
 }
 
+
+
+@keyframes highlight {
+  0% {
+    box-shadow: 0 4px 12px rgba(131, 166, 241, 0.8), 0 4px 12px rgba(131, 166, 241, 0.9);
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+
+.highlight {
+  animation: highlight 3s;
+}
+
+.datepicker-container{
+  position: relative; 
+}
+
+.datepicker-icon{
+  position: absolute; 
+  margin-top: 12px;
+  cursor: pointer;
+}
+
+
+
+.datepicker{
+  padding-left: 25px !important;
+}
+
+.text-bottom{
+  vertical-align: baseline;
+}

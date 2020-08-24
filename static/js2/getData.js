@@ -3,6 +3,17 @@
 */
 
 async function handleFormSubmit() {
+  flag = false;
+  const controller = new AbortController();
+  const signal = controller.signal;
+  $("#cancel").click(function (e) {
+    e.preventDefault();
+
+    flag = true;
+    hidelLoaders("fast");
+    controller.abort();
+    console.log(flag);
+  });
   // removing all charts, because state manager is hard to setup
   $("#chartsContainer").children("div").remove();
   $("#chartsContainer").children("hr").remove();
@@ -14,7 +25,7 @@ async function handleFormSubmit() {
   parameters_ids = parameters.map((p) => p.id);
 
   // check if any of the forms are empty and if so do not proceed
-  if (!checkIfEmpty(stations_ids, parameters_ids)) return;
+  // if (!checkIfEmpty(stations_ids, parameters_ids)) return;
 
   // show spinner and setup progress bar values
 
@@ -36,9 +47,6 @@ async function handleFormSubmit() {
       //loop through selected parameters
 
       if (flag) {
-        // flag tells if user clicked "cancel" button and stop gathering data if so
-        hidelLoaders("fast");
-        $("#cancelBarContainer").addClass("no-display");
         return;
       }
       prog += 1;
@@ -55,6 +63,8 @@ async function handleFormSubmit() {
 
       // data to pass to the backend
       data = {
+        start_date: $("#startDatepicker").val(),
+        end_date: $("#endDatepicker").val(),
         stat_id: statID,
         param_id: paramID,
         csrfmiddlewaretoken: csrftoken,
@@ -62,6 +72,7 @@ async function handleFormSubmit() {
 
       // fetch data from backend
       let response = await fetch("/", {
+        signal,
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, *cors, same-origin
         cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached

@@ -9,6 +9,8 @@ from .data_proc import clean_df, get_model_from_parameter
 import time
 from django_pandas.io import read_frame
 from .secret_vars import gmaps_api_key, mapbox_access_token
+from datetime import datetime
+import pandas as pd
 
 
 def index(request):
@@ -16,6 +18,18 @@ def index(request):
     if request.method == 'POST':
         try:
             response_body = json.loads(request.body)
+            start_date = response_body.get('start_date')
+            end_date = response_body.get('end_date')
+            if start_date == '':
+                start_date = datetime(1930, 1, 1)
+            else:
+                start_date = pd.to_datetime(start_date, format='%d/%m/%Y')
+
+            if end_date == '':
+                end_date = datetime.now()
+            else:
+                end_date = pd.to_datetime(end_date, format='%d/%m/%Y')
+
             est_id_local = response_body.get('stat_id')
             param_id_local = response_body.get('param_id')
             print(est_id_local, param_id_local)
@@ -37,7 +51,7 @@ def index(request):
 
             if has_model:
                 # even if it has a model, it can has no data
-                qs = selected_model.objects.filter(estacao=station)
+                qs = selected_model.objects.filter(estacao=station, date__gte=start_date, date__lte=end_date)
                 has_qs = True
                 if not qs:
                     has_qs = False
@@ -45,11 +59,13 @@ def index(request):
                     selected_model_un = SessionDataUnits
 
             if not has_qs:
-                qs = SessionData.objects.filter(estacao=station, parametro=parameter)
+                qs = SessionData.objects.filter(estacao=station, parametro=parameter,
+                                                date__gte=start_date, date__lte=end_date)
 
             if not qs:
                 # print('sem dados na session db')
-                df, result = get_data(estacao=station.est_id, parametro=parameter.param_id)
+                df, result = get_data(estacao=station.est_id, parametro=parameter.param_id,
+                                      date_begin=start_date, date_end=end_date)
                 # print(df.head())
                 try:
                     un = df.columns[1].split(' ')[-1].strip('()')
@@ -103,9 +119,12 @@ def index(request):
         from django.db import connection
         cursor = connection.cursor()
         cursor.execute("vacuum;")
+
+        all_params = Parametro.objects.all()
+        large_params = [p.id for p in all_params if 'hora' in p.slug or 'dia' in p.slug]
         # quit()
     # print(Estacao.objects.all())
-    return render(request, 'index.html', {'estacao_form': estacao_form, 'parametro_form': parametro_form, 'gmaps_api_key': gmaps_api_key, 'mapbox_access_token': mapbox_access_token})
+    return render(request, 'index.html', {'estacao_form': estacao_form, 'parametro_form': parametro_form, 'gmaps_api_key': gmaps_api_key, 'mapbox_access_token': mapbox_access_token, 'large_params': large_params})
 # Create your views here.
 
 

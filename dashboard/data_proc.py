@@ -35,7 +35,7 @@ def clean_df(df, freq_int='MS'):
     if freq_int == 'YS':
         chart_type = 'column'
     else:
-        if df.value.isna().sum() > len(df)/2:
+        if df.value.isna().sum() > len(df)*0.7:
             chart_type = 'column'
         else:
             chart_type = 'line'
