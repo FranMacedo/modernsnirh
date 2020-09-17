@@ -14,28 +14,63 @@ def to_js_time(x):
     return y * 1000
 
 
-def clean_df(df, freq_int='MS'):
-    # df.to_csv('df.csv')
+def get_freq(date_diff):
+    freq = min(date_diff)
+    freq_days = freq.days
+    if freq_days < 1:
+        return 'H'
+    elif freq_days == 1:
+        return 'D'
+    elif freq_days < 32:
+        return 'MS'
+    else:
+        return 'YS'
+
+
+def clean_df(df):
+    # print(df)
 
     df = df[['date', 'value']]
-    # try:
-    #     un = df.columns[1].split(' ')[-1].strip('()')
-    # except Exception as e:
-    #     print(f'something went wrong while gettin unidade: {e}')
-    #     un = ''
-    # un = ''
-    # df.columns = ['date', 'value']
+    # df.to_csv('df.csv')
+    # df1 = pd.read_csv('df.csv', index_col=0)
     df.index = pd.to_datetime(df.date)
-    dr = pd.date_range(start=df.index[0], end=df.index[-1], freq=freq_int)
-    if freq_int == 'YS':
-        dr = [d + relativedelta(month=10, day=1) for d in dr]
+    freq = get_freq(df.date.diff()[1:])
+
+    dr = pd.date_range(start=df.index[0], end=df.index[-1], freq=freq)
+    # if freq == 'YS':
+    #     dr = [d + relativedelta(month=10, day=1) for d in dr]
+    #     dr2 = [d for d in dr if not any([i.month==d.month and i.year==d.year  for i in df.index])]
+    dr = list(dr) + list(df.index)
+    dr = list(set(dr))
+
     df = df.reindex(dr)
+    df.sort_index(inplace=True)
+    if freq == 'YS':
+        df['year'] = df.index.year
+        df.date = df.index
+        df.reset_index(drop=True, inplace=True)
+        df_dup = df.loc[df.year.duplicated(keep=False)]
+        idx_drop = df_dup[df_dup.value.isna()].index
+        df = df.loc[~df.index.isin(idx_drop)]
+        df.index = df.date
+        df.drop(columns=['year'], inplace=True)
+
+    elif freq == 'MS':
+        df['ym'] = df.index.year.map(str) + df.index.month.map(str)
+        df.date = df.index
+        df.reset_index(drop=True, inplace=True)
+        df_dup = df.loc[df.ym.duplicated(keep=False)]
+        idx_drop = df_dup[df_dup.value.isna()].index
+        df = df.loc[~df.index.isin(idx_drop)]
+        df.index = df.date
+        df.drop(columns=['ym'], inplace=True)
+
     df.value = pd.to_numeric(df.value, errors='coerce')
 
-    if freq_int == 'YS':
+    if freq == 'YS':
         chart_type = 'column'
     else:
-        if df.value.isna().sum() > len(df)*0.7:
+        if df.value.isna().sum() > len(df)*0.3:
             chart_type = 'column'
         else:
             chart_type = 'line'

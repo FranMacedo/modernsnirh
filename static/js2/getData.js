@@ -10,7 +10,7 @@ async function handleFormSubmit() {
     e.preventDefault();
 
     flag = true;
-    hidelLoaders("fast");
+    hideLoaders("fast");
     controller.abort();
     console.log(flag);
   });
@@ -95,4 +95,130 @@ async function handleFormSubmit() {
       // $(".preloader-wrapper").fadeOut("fast");
     }
   }
+}
+
+function getRedeStations() {
+  showMapLoaders();
+  let redes = $("#id_rede").select2("data");
+  redes_ids = redes.map((r) => r.id);
+  data = {
+    csrfmiddlewaretoken: csrftoken,
+    redes_ids,
+  };
+  fetch("getStations/", {
+    method: "POST",
+    credentials: "include",
+    body: JSON.stringify(data),
+    cache: "no-cache",
+    headers: new Headers({
+      "X-CSRFToken": csrftoken,
+
+      "content-type": "application/json",
+    }),
+  })
+    .then(function (response) {
+      if (response.status !== 200) {
+        console.log(`Looks like there was a problem. Status code: ${response.status}`);
+        return;
+      }
+      response.json().then(function (data) {
+        mainMap.removeLayer(featureLayer);
+
+        if (data["result"]) {
+          featureLayer = L.geoJson(JSON.parse(data["data_map"]), {
+            onEachFeature: onEachFeature,
+            drawControl: true,
+          }).addTo(mainMap);
+          setStationsOptions(data["estacoes_select"]);
+          setParametersOptions(data["parametros_select"]);
+        } else {
+          setStationsOptions([]);
+          setParametersOptions([]);
+        }
+        hideMapLoaders();
+      });
+    })
+    .catch(function (error) {
+      console.log("Fetch error: " + error);
+    });
+}
+
+function getStationParameters() {
+  let estacoes = $("#id_estacao").select2("data");
+  estacoes_ids = estacoes.map((e) => e.id);
+  data = {
+    csrfmiddlewaretoken: csrftoken,
+    estacoes_ids,
+  };
+  fetch("getParameters/", {
+    method: "POST",
+    credentials: "include",
+    body: JSON.stringify(data),
+    cache: "no-cache",
+    headers: new Headers({
+      "X-CSRFToken": csrftoken,
+
+      "content-type": "application/json",
+    }),
+  })
+    .then(function (response) {
+      if (response.status !== 200) {
+        console.log(`Looks like there was a problem. Status code: ${response.status}`);
+        return;
+      }
+      response.json().then(function (data) {
+        if (data["result"]) {
+          setParametersOptions(data["parametros_select"]);
+          console.log(data["data_fim"]);
+          setDateBeginAndDateEnd(data["data_inicio"], data["data_fim"]);
+        } else {
+          setParametersOptions([]);
+        }
+      });
+    })
+    .catch(function (error) {
+      console.log("Fetch error: " + error);
+    });
+}
+
+function getDatesIntervals() {
+  let parametros = $("#id_parametro").select2("data");
+  let estacoes = $("#id_estacao").select2("data");
+
+  if (typeof parametros == "undefined" || parametros.length == 0) {
+    return;
+  }
+  console.log("gathering dates intervals..");
+  parametros_ids = parametros.map((p) => p.id);
+  estacoes_ids = estacoes.map((e) => e.id);
+
+  data = {
+    csrfmiddlewaretoken: csrftoken,
+    parametros_ids,
+  };
+  fetch("getDates/", {
+    method: "POST",
+    credentials: "include",
+    body: JSON.stringify(data),
+    cache: "no-cache",
+    headers: new Headers({
+      "X-CSRFToken": csrftoken,
+
+      "content-type": "application/json",
+    }),
+  })
+    .then(function (response) {
+      if (response.status !== 200) {
+        console.log(`Looks like there was a problem. Status code: ${response.status}`);
+        return;
+      }
+      response.json().then(function (data) {
+        if (data["result"]) {
+          setDateBeginAndDateEnd(data["data_inicio"], data["data_fim"]);
+        }
+      });
+    })
+    .catch(function (error) {
+      console.log("Fetch error: " + error);
+    });
 }

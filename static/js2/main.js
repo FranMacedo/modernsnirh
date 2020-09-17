@@ -3,8 +3,8 @@
 */
 let flag = false;
 document.addEventListener("DOMContentLoaded", function () {
-  $(".preloader-background").fadeOut("slow");
-  $(".preloader-wrapper").fadeOut();
+  $("#mainLoaderChild").fadeOut("slow");
+  $("#mainLoader").fadeOut();
 });
 
 $(document).ready(function () {
@@ -13,6 +13,11 @@ $(document).ready(function () {
       highlight("startDatepicker");
       highlight("endDatepicker");
     },
+  });
+
+  $("#id_rede").select2({
+    placeholder: "Seleccione uma ou mais redes",
+    theme: "material",
   });
 
   $("#id_estacao").select2({
@@ -37,14 +42,21 @@ $(document).ready(function () {
   // });
 
   $("#id_estacao").on("change", function (e) {
-    setSelectionStyle();
-
+    setSelectionStyle($(this));
     changeMapColors();
+    getStationParameters();
   });
 
   $("#id_parametro").on("change", function (e) {
-    setSelectionStyle();
+    setSelectionStyle($(this));
+    getDatesIntervals();
   });
+  $("#id_rede").on("change", function (e) {
+    setSelectionStyle($(this));
+    getRedeStations();
+  });
+
+  $("#id_rede").next().find($("span.dd-arrow")).addClass("no-display");
 
   $("#submitForm").click(function (e) {
     e.preventDefault();

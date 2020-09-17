@@ -1,10 +1,11 @@
 /*
     EVERYTHING MAP RELATED
 */
+
 const getLayerFromId = (id) => {
   let layer;
   featureLayer.eachLayer(function (layerCheck) {
-    if (layerCheck.feature.id == id) {
+    if (parseInt(layerCheck.feature.id) == parseInt(id)) {
       layer = layerCheck;
     }
   });
@@ -15,6 +16,9 @@ const dataurl = "mapData";
 let prevLayersClicked = [];
 let prevLayerHovered = null;
 let featureLayer;
+let mainMap;
+let mql = window.matchMedia("(max-width: 768px)");
+let zoom = mql.matches ? 6.4 : 6.9;
 
 function changeMapColors() {
   // changes color of icons, when something is clicked. selected values get class 'select' and all the others get class 'base'
@@ -48,11 +52,9 @@ function createIcon(type) {
   return icon;
 }
 
-let mql = window.matchMedia("(max-width: 768px)");
-let zoom = mql.matches ? 6.4 : 6.9;
 /* Initialize basic map */
 
-var mainMap = L.map("mainMap", {
+mainMap = L.map("mainMap", {
   zoomSnap: 0.1,
   minZoom: 6.6,
 }).setView([39.6, -7.8536599], zoom);
@@ -103,7 +105,9 @@ info.onAdd = function (mainMap) {
 
 // method that we will use to update the control based on feature properties passed
 info.update = function (props) {
-  this._div.innerHTML = props ? `<p>${props.nome}</p>` : "<p>Selecione uma estação</p>";
+  this._div.innerHTML = props
+    ? `<p>${props.codigo}</p><p>${props.nome}</p><p>altitude: ${props.altitude} m</p>`
+    : "<p>Selecione uma estação</p>";
 };
 
 info.addTo(mainMap);
@@ -114,8 +118,8 @@ function resetHighlight(e) {
 }
 function handleHoverIcon(e) {
   // new L.Draw.Rectangle(mainMap, drawControl.options.rectangle).disable();
-
   const layer = e.target;
+
   info.update(layer.feature.properties);
   !layer._icon.className.split(" ").includes("select-icon") && layer.setIcon(createIcon("hover"));
 }
@@ -159,6 +163,8 @@ function onEachFeature(feature, layer) {
 
 $.getJSON(dataurl, function (data) {
   featureLayer = L.geoJson(data, { onEachFeature: onEachFeature, drawControl: true }).addTo(mainMap);
+  $(".select2-selection__choice__remove").changeElementType("span");
+  hideMapLoaders();
 });
 const drawControl = new L.Control.Draw({
   draw: {

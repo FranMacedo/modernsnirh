@@ -45,7 +45,7 @@ function triggerDownload(chart, type) {
   }
 }
 
-function hidelLoaders(velocity = "fast") {
+function hideLoaders(velocity = "fast") {
   // hide both spinner and progressabar
 
   $("#progressBarContainer").addClass("no-display");
@@ -154,6 +154,9 @@ async function updateCharts(data, station, parameter, prog, totalProg) {
     // if there's some kind of unforeseen error, show danger message
     let msg = data["msg"] ? `: ${data["msg"]}` : "";
     showToast(`<b>Erro a reunir os dados pretendidos</b>${msg}`, "danger-toast");
+  } else if (data["stat"] == "skip") {
+    // if there's no data for this chart, show warning message
+    // showToast(`asd`, "warning-toast");
   } else {
     // if there's no data for this chart, show warning message
     showToast(
@@ -167,17 +170,26 @@ async function updateCharts(data, station, parameter, prog, totalProg) {
   if (prog == totalProg - 1) {
     // if we have all data loaded, wait for 1 sec and hide everything
     await sleep(1000);
-    hidelLoaders("slow");
+    hideLoaders("slow");
   }
 }
 
-function setSelectionStyle() {
-  if ($(".select2-selection__choice__remove").length) {
+function setSelectionStyle(el) {
+  if (el.next().find(".select2-selection__choice__remove").length) {
     $(".select2-selection__choice__remove").changeElementType("span");
-    $(".dd-arrow").addClass("no-display");
+    el.next().find($("span.dd-arrow")).addClass("no-display");
+    el.prev().show();
   } else {
-    $(".dd-arrow").removeClass("no-display");
+    el.next().find($("span.dd-arrow")).removeClass("no-display");
+    el.prev().hide();
   }
+  // elID = el.attr("id");
+  // if ($(`#${elID} option:not(:selected)`).length == 0) {
+  // if all options are selected
+  // $(`#${elID}`).prev().prev().attr("disabled", true); // disable select all button
+  // } else {
+  // $(`#${elID}`).prev().prev().attr("disabled", false); // disable select all button
+  // }
 }
 
 function highlight(id, t = 3000) {
@@ -212,4 +224,34 @@ function checkToMuchData() {
     return false;
   }
   return true;
+}
+
+function setStationsOptions(stations) {
+  var $el = $("#id_estacao");
+  $el.empty(); // remove old options
+  stations.forEach((element) => {
+    $el.append($("<option></option>").attr("value", element.value).text(element.name));
+  });
+
+  $el.trigger("change"); // Trigger change to select 2
+}
+
+function setParametersOptions(parameters) {
+  var $el = $("#id_parametro");
+  $el.empty(); // remove old options
+  parameters.forEach((element) => {
+    $el.append($("<option></option>").attr("value", element.value).text(element.name));
+  });
+
+  $el.trigger("change"); // Trigger change to select 2
+}
+
+function showMapLoaders() {
+  $(".map-loader-container").fadeIn("fast");
+  $("#mapLoader").fadeIn("fast");
+}
+
+function hideMapLoaders() {
+  $(".map-loader-container").fadeOut("fast");
+  $("#mapLoader").fadeOut("fast");
 }

@@ -24,9 +24,9 @@
 {% endblock stylesheets %}
 
 {% block content %}
-<div class="preloader-background pre-load">
+<div id="mainLoader" class="preloader-background pre-load">
     
-  <div class="preloader-wrapper big active">
+  <div id="mainLoaderChild" class="preloader-wrapper big active">
     <div class="spinner-layer spinner-blue">
       <div class="circle-clipper left">
         <div class="circle"></div>
@@ -82,21 +82,36 @@
 </div>
 
   <div class="row section">
-    <div class="col s12 m4">
+    <div class="col s12 m3 map-container">
       <!-- <button id="cancel2" class="btn-flat waves-effect waves-red cancel-btn-container"><span class="material-icons red-text text-darken-1 cancel-btn">clear</span></button> -->
+      <div class="map-loader-container">
+      <div id="mapLoader" class="preloader-wrapper big active">
+        <div class="spinner-layer spinner-blue-only">
+          <div class="circle-clipper left">
+            <div class="circle"></div>
+          </div><div class="gap-patch">
+            <div class="circle"></div>
+          </div><div class="circle-clipper right">
+            <div class="circle"></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      <h5>Estações Meteorológicas</h5>
       <div id="mainMap"></div> 
     </div>
     <!-- <span class="material-icons right">arrow_drop_down</span> -->
-    <div class="col s12 m8">
+    <div class="col s12 m9">
       <form method="post" id='station-parameter-form'>
         {% csrf_token %}
         <div class="row">
-          <div class="col s12 m6">
+          <div class="col s12 m4">
+            {{ rede_form }}
+          </div>
+          <div class="col s12 m4">
             {{ estacao_form }}
           </div>
-          <div class="col s12 m6">
+          <div class="col s12 m4">
             {{ parametro_form }}
           </div>
         </div>

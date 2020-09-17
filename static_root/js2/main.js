@@ -3,27 +3,27 @@
 */
 let flag = false;
 document.addEventListener("DOMContentLoaded", function () {
-  $(".preloader-background").fadeOut("slow");
-  $(".preloader-wrapper").fadeOut();
+  $("#mainLoaderChild").fadeOut("slow");
+  $("#mainLoader").fadeOut();
 });
 
 $(document).ready(function () {
-  $(".datepicker").datepicker({
-    startDate: "-3d",
+  $("#modal1").modal({
+    onCloseEnd: function () {
+      highlight("startDatepicker");
+      highlight("endDatepicker");
+    },
   });
-  // $("#id_estacao").select2({
-  //   placeholder: "Seleccione uma ou mais estações",
-  //   theme: "bootstrap",
-  //   width: "resolve",
-  // });
+
+  $("#id_rede").select2({
+    placeholder: "Seleccione uma ou mais redes",
+    theme: "material",
+  });
 
   $("#id_estacao").select2({
     placeholder: "Seleccione uma ou mais estações",
     theme: "material",
   });
-  // .on("select2:open", function () {
-  //   $(".select2-results__options").niceScroll();
-  // });
 
   $("#id_parametro").select2({
     placeholder: "Seleccione um ou mais parametros",
@@ -42,19 +42,27 @@ $(document).ready(function () {
   // });
 
   $("#id_estacao").on("change", function (e) {
-    setSelectionStyle();
-
+    setSelectionStyle($(this));
     changeMapColors();
+    getStationParameters();
   });
 
   $("#id_parametro").on("change", function (e) {
-    setSelectionStyle();
+    setSelectionStyle($(this));
+    getDatesIntervals();
   });
+  $("#id_rede").on("change", function (e) {
+    setSelectionStyle($(this));
+    getRedeStations();
+  });
+
+  $("#id_rede").next().find($("span.dd-arrow")).addClass("no-display");
 
   $("#submitForm").click(function (e) {
     e.preventDefault();
     $("#initial-info").hide();
-    handleFormSubmit();
+    let result = checkToMuchData();
+    result && handleFormSubmit();
   });
   $(".reset").click(() => {
     $(".leaflet-geosearch-button ").removeClass("active");
@@ -72,10 +80,8 @@ $(document).ready(function () {
     $(".leaflet-geosearch-button ").removeClass("active");
   });
 
-  $("#cancelBtn").click(() => {
-    $("#progressBarContainer").addClass("no-display");
-    $("#cancelBarContainer").removeClass("no-display");
-    flag = true;
+  $("#continue-fecth").click(function () {
+    handleFormSubmit();
   });
 });
 

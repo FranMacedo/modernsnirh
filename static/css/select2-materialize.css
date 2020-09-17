@@ -84,7 +84,8 @@ CSS Pretty Print
 	 display: inline-block;
 	 float: left;
 	 margin-right: 8px;
-	 margin-bottom: 4px;
+   margin-bottom: 4px;
+ 
 }
  .select2-container--material .select2-selection--multiple .select2-selection__choice__remove {
 	/* Hide default content */
@@ -157,13 +158,17 @@ CSS Pretty Print
 	 cursor: pointer;
 	 clear: both;
 	 color: rgba(0, 0, 0, 0.87);
-	 line-height: 0.2rem;
+	 line-height: 1.2rem;
 	 text-align: left;
 	 text-transform: none;
 	/* @extend .dropdown-content li>a, .dropdown-content li>span */
 	 font-size: 14px; /*all the options*/
 	 display: block;
-	 padding: 1rem;
+   padding: 0.4rem 0.2rem 0.4rem 0.2rem;
+/*    
+   max-width: 100%;
+   overflow: hidden;
+   text-overflow: ellipsis; */
 	/** * Disabled options */
 	/** * Selected option */
 	/** * Active/hovered option */
@@ -205,3 +210,11 @@ CSS Pretty Print
 }
  
  
+/* li.select2-selection__choice {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis; 
+} */
+.select2-selection__rendered {
+  padding-right: 12px !important; 
+}

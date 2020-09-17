@@ -52,6 +52,16 @@ body {
   display: none !important;
 }
 
+.cancel-btn-container{
+  display: flex !important;
+  align-items: center !important;
+  position: absolute !important;
+  top: 20px;
+  right: 20px;
+}
+.cancel-btn{
+font-size: 40px !important;
+}
 
 /* NAV */
 
@@ -66,9 +76,11 @@ nav .custom-brand-logo {
 /*    MAP     */
 
 #mainMap {
-  height: 75vh;
+  height: 80vh;
   /* width: 40vh; */
 }
+
+
 
 
 .base-icon{
@@ -105,16 +117,15 @@ nav .custom-brand-logo {
 
 .info {
   padding: 6px 8px;
-  font: 14px/16px Arial, Helvetica, sans-serif;
-  background: white;
-  background: rgba(255,255,255,0.8);
+  font: 12px Arial, Helvetica, sans-serif;
+  background: rgba(255,255,255,0.9);
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
   border-radius: 5px;
 }
 
 .info p {
   margin: 0 0 3px;
-  color: #777;
+  color: rgb(53, 51, 51);
 }
 
 /*     SELECTION    */
@@ -203,6 +214,37 @@ input[type="search"] {
 }
 
 
+
+
+.map-container{
+	position: relative;
+
+}
+.map-loader-container{
+  height: 80vh;
+  background-color: rgba(87, 87, 87, 0.4); /* Black background with opacity */
+  display: flex;
+	align-items: center;
+  justify-content: center;
+  flex-direction: column;	
+	position: absolute;
+  z-index: 1999;
+  /* top: 0; */
+	left: 10px;
+	right: 10px;
+  /* bottom: 0;	 */
+}
+
+#mapLoader {
+	display: flex;
+	align-items: center;
+  justify-content: center;
+  flex-direction: column;	
+	position: absolute;
+	z-index: 2000;	
+
+}
+
 .pre-load{
 	background-color: #eee;
 }
@@ -217,3 +259,56 @@ input[type="search"] {
   margin-top: 10px;
 }
 
+
+
+@keyframes highlight {
+  0% {
+    box-shadow: 0 4px 12px rgba(131, 166, 241, 0.8), 0 4px 12px rgba(131, 166, 241, 0.9);
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+
+.highlight {
+  animation: highlight 3s;
+}
+
+.datepicker-container{
+  position: relative; 
+}
+
+.datepicker-icon{
+  position: absolute; 
+  margin-top: 12px;
+  cursor: pointer;
+}
+
+
+
+.datepicker{
+  padding-left: 25px !important;
+}
+
+.text-bottom{
+  vertical-align: baseline;
+}
+
+.btn-choice{
+  height: 32px;
+    line-height: 32px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 16px;
+    background-color: #dedede;
+    display: inline-block;
+    color: rgba(0, 0, 0, 0.87);
+    margin: 2px 0;
+    font-size: 0;
+    white-space: nowrap;
+    font-size: 12px;
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 8px;
+    margin-bottom: 4px;
+}

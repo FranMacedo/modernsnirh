@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import datetime
 
-from .models import Estacao, Parametro, PrecipitacaoMensal, PrecipitacaoDiaria, EstacaoParamUnits
+from .models import Estacao, Parametro, PrecipitacaoMensal, PrecipitacaoDiaria
 
 # Mangualde
 # estacao = 920685448
@@ -64,3 +64,18 @@ def get_data(estacao=920685448, parametro=1436794570, date_begin=datetime(1930, 
         return df, True
     except:
         return None, False
+
+
+def all_stations_month_data():
+    df_total = pd.DataFrame()
+    all_meteo_stations = Estacao.objects.filter(rede__slug='meteorologica')
+    for estacao in all_meteo_stations:
+        df, result = get_data(estacao=estacao.est_id, parametro=1436794570)
+        if not result:
+            continue
+        print('--success!')
+        df['estacao'] = estacao.est_id
+        df_total = df_total.append(df)
+
+    df_total.to_csv('monthly_rainfall.csv')
+    return df_total
