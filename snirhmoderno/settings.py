@@ -9,24 +9,29 @@ https://docs.djangoproject.com/en/3.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
-from .local_settings import LOCAL_DATABASES, LOCAL_DEBUG, BASE_DIR
+# from .local_settings import LOCAL_DATABASES, LOCAL_DEBUG, BASE_DIR
 # from environs import Env
 import os
+from pathlib import Path
+import environ
 
-# env = Env()
-# env.read_env()
 
+root = environ.Path(__file__) - 2  # get root of the project
+env = environ.Env()
+environ.Env.read_env(root() + '/.env')  # reading .env file
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '9dz8lc)9%3g3x=)e8xu(8gra0i@tb#z#krx)$rh&rwqn4o322u'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = LOCAL_DEBUG
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 
 # Application definition
@@ -83,8 +88,16 @@ WSGI_APPLICATION = 'snirhmoderno.wsgi.application'
 #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #     }
 # }
-
-DATABASES = LOCAL_DATABASES
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
 
 
 # Password validation
