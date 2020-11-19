@@ -31,12 +31,17 @@ def clean_df(df):
     # print(df)
 
     df = df[['date', 'value']]
-    # df.to_csv('df.csv')
-    # df1 = pd.read_csv('df.csv', index_col=0)
+    df = df.sort_values('date')
+    # from .forecast import best_forecast
+    # y_pred = best_forecast(df.value, int(0.2*len(df)))
+
     df.index = pd.to_datetime(df.date)
     freq = get_freq(df.date.diff()[1:])
 
     dr = pd.date_range(start=df.index[0], end=df.index[-1], freq=freq)
+    # dr_pred = pd.date_range(start=df.index[-1] + relativedelta(months=1),
+    # end=df.index[-1] + relativedelta(months=len(y_pred)), freq=freq)
+
     # if freq == 'YS':
     #     dr = [d + relativedelta(month=10, day=1) for d in dr]
     #     dr2 = [d for d in dr if not any([i.month==d.month and i.year==d.year  for i in df.index])]
@@ -75,9 +80,21 @@ def clean_df(df):
         else:
             chart_type = 'line'
 
+    df.drop(columns=['date'], inplace=True)
+    # df.to_csv('dft.csv')
+    # y_pred.to_csv('y_pred.csv')
+    # df = pd.read_csv('dft.csv', index_col=0, parse_dates=True)
+    # y_pred = pd.read_csv('y_pred.csv', index_col=0, parse_dates=True)
+    # print(y_pred)
+
     dates = list(map(to_js_time, df.index))
     data_js = [list(x) for x in zip(dates, df.value)]
-    return simplejson.dumps(data_js, ignore_nan=True),  chart_type
+
+    # dates_pred = list(map(to_js_time, dr_pred))
+    # data_js_pred = [list(x) for x in zip(dates_pred, y_pred)]
+
+    # return simplejson.dumps(data_js, ignore_nan=True), simplejson.dumps(data_js_pred, ignore_nan=True),  chart_type
+    return simplejson.dumps(data_js, ignore_nan=True),   chart_type
 
 
 def get_model_from_parameter(param_id):

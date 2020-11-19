@@ -125,10 +125,13 @@ async function updateCharts(data, station, parameter, prog, totalProg) {
     let chartName = `${data["parameter_name"]}`;
     let seriesName = `${data["station_name"]}`;
     let chartData = JSON.parse(data["data"]);
+    // let chartDataPred = JSON.parse(data["data_pred"]);
 
     if (!$(`#${chartID}`).highcharts()) {
       // if we don't have this chart in the browser, start it up.
+      // get_chart(chartID, chartName, seriesName, seriesID, data["un"], chartData, chartDataPred, data["chartType"]);
       get_chart(chartID, chartName, seriesName, seriesID, data["un"], chartData, data["chartType"]);
+
       setDownloadTrigger(chartID);
     } else {
       // if we already have this chart in the browser, just add new series to it.
@@ -215,8 +218,6 @@ function checkToMuchData() {
   if (!checkIfEmpty(stations_ids, parameters_ids)) return false;
 
   const found = parameters_ids.some((r) => largeParams.includes(parseInt(r)));
-  console.log(largeParams);
-  console.log(parameters_ids);
 
   // if both data inputs are empty and one of the selected params is large data (hoourly or daily), show modal
   if ($("#startDatepicker").val() == "" && $("#endDatepicker").val() == "" && found) {

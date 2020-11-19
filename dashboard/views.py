@@ -105,10 +105,13 @@ def index(request):
                 except:
                     un = ''
             # print(df.value)
+            # data, data_pred, chart_type = clean_df(df)
             data, chart_type = clean_df(df)
 
+            # print(data_pred)
             return JsonResponse({'stat': 'true',
                                  'data': data,
+                                 #  'data_pred': data_pred,
                                  'station_name': station.nome,
                                  'parameter_name': parameter.designacao,
                                  'un': un,
