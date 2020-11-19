@@ -68,7 +68,7 @@ def get_monthly_data(nr_stations=None):
 
     df_total.reset_index(inplace=True, drop=True)
     df_total.columns = ['date', 'rainfall', 'station']
-    df_total.to_csv('monthly_rainfall.csv')
+    # df_total.to_csv('monthly_rainfall.csv')
     return df_total
 
 
@@ -88,7 +88,7 @@ def get_yearly_data():
     df_total.drop(columns='date', inplace=True)
     df_total.rainfall = df_total.rainfall.map(float)
 
-    df_total.to_csv('yearly_rainfall.csv')
+    # df_total.to_csv('yearly_rainfall.csv')
     return df_total
 
 

@@ -77,5 +77,5 @@ def all_stations_month_data():
         df['estacao'] = estacao.est_id
         df_total = df_total.append(df)
 
-    df_total.to_csv('monthly_rainfall.csv')
+    # df_total.to_csv('monthly_rainfall.csv')
     return df_total
