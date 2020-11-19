@@ -14,7 +14,9 @@ function add_btns(containerId, classID) {
   );
 }
 
+// function get_chart(chartID, chartName, seriesName, seriesID, un, data, dataPred, chartType = "line") {
 function get_chart(chartID, chartName, seriesName, seriesID, un, data, chartType = "line") {
+  // console.log(dataPred);
   // var node = document.getElementById("myList2").lastChild;
   // document.getElementById("myList1").appendChild(node);
   $("#chartsContainer").append(`<div class="row mt-3"><div id="${chartID}Btns" class="right mr-2"></div></div>`);
@@ -145,6 +147,13 @@ function get_chart(chartID, chartName, seriesName, seriesID, un, data, chartType
         data: data,
         type: chartType,
       },
+      // {
+      //   // id: seriesID,
+      //   name: seriesName + " previsão",
+      //   data: dataPred,
+      //   type: chartType,
+      //   color: "red",
+      // },
     ],
   });
   // $("#button").click(function () {
