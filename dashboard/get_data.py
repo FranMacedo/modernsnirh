@@ -79,3 +79,52 @@ def all_stations_month_data():
 
     # df_total.to_csv('monthly_rainfall.csv')
     return df_total
+
+
+def update_timeseries(estacao=920685448, parametro=1436794570, date_begin=datetime(1930, 1, 1), date_end=datetime.now(), replace=True):
+    from .models import Estacao, Parametro, AnyTimeseriesData
+    df, result = get_data(estacao, parametro, date_begin, date_end)
+    if result:
+        df.columns = ['date', 'value']
+        estacao_obj = Estacao.objects.get(est_id=estacao)
+        parametro_obj = Parametro.objects.get(param_id=parametro)
+
+        df['estacao'] = estacao_obj
+        df['parametro'] = parametro_obj
+
+        if replace:
+            AnyTimeseriesData.objects.filter(
+                estacao=estacao_obj,
+                parametro=parametro_obj,
+                date__in=df.date.tolist()
+            ).delete()
+        else:
+            qs = AnyTimeseriesData.objects.filter(
+                estacao=estacao_obj,
+                parametro=parametro_obj,
+                date__in=df.date.tolist()
+            )
+            existing_dates = qs.values_list('date', flat=True)
+            df = df.loc[~df.date.isin(existing_dates)]
+
+        print('A atualizar AnyTimeseriesData...')
+        AnyTimeseriesData.objects.bulk_create(AnyTimeseriesData(**vals) for vals in df.to_dict("records"))
+        print('Done!\n')
+
+
+def update_timeseries_rede(rede_txt, date_begin=datetime(2010, 1, 1), date_end=datetime.now(), replace=True):
+    from .models import Rede, ParametroUnit
+    from django.utils.text import slugify
+
+    try:
+        rede_obj = Rede.objects.get(slug=slugify(rede_txt))
+    except:
+        print(f'Rede {rede_txt} não identificada!')
+        return
+
+    print(f'A atualizar base de dados para a rede {rede_txt}')
+
+    estacoes_parametros = ParametroUnit.objects.filter(estacao__rede=rede_obj)
+    for est_param in estacoes_parametros:
+        update_timeseries(estacao=est_param.estacao.est_id, parametro=est_param.parametro.param_id,
+                          date_begin=date_begin, date_end=date_end, replace=replace)

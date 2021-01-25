@@ -99,6 +99,16 @@ class ParametroUnit(models.Model):
     numero_valores = models.BigIntegerField(verbose_name="Número Valores", default=0)
 
 
+class AnyTimeseriesData(models.Model):
+    estacao = models.ForeignKey(Estacao, on_delete=models.CASCADE, blank=True, null=True)
+    parametro = models.ForeignKey(Parametro, on_delete=models.CASCADE, blank=True, null=True)
+    date = models.DateTimeField(blank=True, null=True)  # date of value
+    value = models.FloatField(max_length=100, blank=True, null=True)  # value of parameter
+
+    def __str__(self):
+        return str(self.estacao.nome) + '-' + str(self.parametro.designacao)
+
+
 class SessionData(models.Model):
     estacao = models.ForeignKey(Estacao, on_delete=models.CASCADE, blank=True, null=True)
     parametro = models.ForeignKey(Parametro, on_delete=models.CASCADE, blank=True, null=True)
